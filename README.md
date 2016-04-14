@@ -3,7 +3,7 @@ A blade-sharp javascript library that provides serval simple jQuery like operati
 
 ## Usage
 + `$q('selector')`: Wrapper for document.querySelector()
-+ `$qa('selector')`: Wrapper for document,querySelectorAll()
++ `$qa('selector')`: Wrapper for document.querySelectorAll()
 + `Element.addClass('classes')`: Add classes to an element, use `space` for multiple class names
 + `Element.removeClass('classes')`: Remove classes from an element, use `space` for multiple class names
 + `Element.toggleClass('classes')`: Toggle classes for an element, use `space` for multiple class names
