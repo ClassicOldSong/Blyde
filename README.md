@@ -1,2 +1,2 @@
 # Blyde
-A javascript library that provides serval simple jQuery like operations, as sharp as a blade.
+A blade-sharp javascript library that provides serval simple jQuery like operations
