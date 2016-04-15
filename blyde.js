@@ -1,71 +1,123 @@
-/* global console */
 "use strict";
 {
-	const $q = function(selector) {
-		return this.querySelector(selector);
-	};
+	const $create = tag => document.createElement(tag);
 
-	const $qa = function(selector) {
-		return this.querySelectorAll(selector);
-	};
+	const methods = {
+		$q(selector) {
+			return this.querySelector(selector);
+		},
 
-	const addClass = function(className) {
-		let classes = className.split(' ');
-		this.classList.add(...classes);
-		return this;
-	};
+		$qa(selector) {
+			return this.querySelectorAll(selector);
+		},
 
-	const removeClass = function(className) {
-		let classes = className.split(' ');
-		this.classList.remove(...classes);
-		return this;
-	};
+		addClass(className) {
+			let classes = className.split(' ');
+			this.classList.add(...classes);
+			return this;
+		},
 
-	const toggleClass = function(className) {
-		let classes = className.split(' ');
-		let classArr = this.className.split(' ');
-		for (let i in classes) {
-			let classIndex = classArr.indexOf(classes[i]);
-			if (classIndex > -1) {
-				classArr.splice(classIndex, 1);
-			} else {
-				classArr.push(classes[i]);
+		removeClass(className) {
+			let classes = className.split(' ');
+			this.classList.remove(...classes);
+			return this;
+		},
+
+		toggleClass(className) {
+			let classes = className.split(' ');
+			let classArr = this.className.split(' ');
+			for (let i in classes) {
+				let classIndex = classArr.indexOf(classes[i]);
+				if (classIndex > -1) {
+					classArr.splice(classIndex, 1);
+				} else {
+					classArr.push(classes[i]);
+				}
 			}
+			this.className = classArr.join(' ').trim();
+			return this;
+		},
+
+		replaceWith(node) {
+			let parent = this.parentNode;
+			if (parent) {
+				parent.replaceChild(node, this);
+			}
+			return node;
+		},
+
+		swap(node) {
+			let tempDiv = document.createElement('div');
+			methods.replaceWith.call(node, tempDiv);
+			methods.replaceWith.call(this, node);
+			methods.replaceWith.call(tempDiv, this);
+			return node;
+		},
+
+		before(...nodes) {
+			let tempFragment = new DocumentFragment();
+			nodes.reverse();
+			for (let i in nodes) {
+				tempFragment.appendChild(nodes[i]);
+			}
+			this.parentNode.insertBefore(tempFragment, this);
+			return this;
+		},
+
+		after(...nodes) {
+			let tempFragment = new DocumentFragment();
+			for (let i in nodes) {
+				tempFragment.appendChild(nodes[i]);
+			}
+			if (this.nextSibling) {
+				this.parentNode.insertBefore(tempFragment, this.nextSibling);
+			} else {
+				this.parentNode.append(tempFragment);
+			}
+			return this;
+		},
+
+		append(...nodes) {
+			let tempFragment = new DocumentFragment();
+			for (let i in nodes) {
+				tempFragment.appendChild(nodes[i]);
+			}
+			this.appendChild(tempFragment);
+			return this;
+		},
+
+		prepend(...nodes) {
+			let tempFragment = new DocumentFragment();
+			nodes.reverse();
+			for (let i in nodes) {
+				tempFragment.appendChild(nodes[i]);
+			}
+			if (this.firstChild) {
+				this.insertBefore(tempFragment, this.firstChild);
+			} else {
+				this.append(tempFragment);
+			}
+			return this;
+		},
+
+		empty() {
+			this.innerHTML = '';
+		},
+
+		remove() {
+			this.parentNode.removeChild(this);
+			return this;
 		}
-		this.className = classArr.join(' ').trim();
-		return this;
 	};
 
-	const replaceWith = function(node) {
-		this.parentNode.replaceChild(node, this);
-		return node;
-	};
+	for (let i in methods) {
+		Element.prototype[i] = methods[i];
+	}
 
-	const swap = function(node) {
-		let tempDiv = document.createElement('div');
-		replaceWith.call(node, tempDiv);
-		replaceWith.call(this, node);
-		replaceWith.call(tempDiv, this);
-		return node;
-	};
+	document.$q = methods.$q;
+	document.$qa = methods.$qa;
 
-	const remove = function() {
-		this.parentNode.removeChild(this);
-		return this;
-	};
-
-	Element.prototype.$q = $q;
-	Element.prototype.$qa = $qa;
-	Element.prototype.addClass = addClass;
-	Element.prototype.removeClass = removeClass;
-	Element.prototype.toggleClass = toggleClass;
-	Element.prototype.replaceWith = replaceWith;
-	Element.prototype.swap = swap;
-	Element.prototype.remove = remove;
-
-	document.$q = $q;
-	document.$qa = $qa;
-
-	window.$q = selector => $q.call(document, selector);
-	window.$qa = selector => $qa.call(document, selector);
+	window.$q = selector => methods.$q.call(document, selector);
+	window.$qa = selector => methods.$qa.call(document, selector);
+	window.$create = $create;
 }
