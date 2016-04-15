@@ -12,7 +12,7 @@ A blade-sharp javascript library that provides serval simple jQuery like operati
 + `Element.removeClass('classes')`: Remove classes from an element, use `space` for multiple class names
 + `Element.toggleClass('classes')`: Toggle classes for an element, use `space` for multiple class names
 + `Element.replaceWith(node)`: Replace element with a new element
-+ `Element.swap(node)`: Swap the element with a given one
++ `Element.swap(node)`: Swap an element with another (Must be in document!!)
 + `Element.remove()`: Delete an element
 
 ##License
