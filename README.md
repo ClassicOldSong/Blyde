@@ -16,8 +16,10 @@ A blade-sharp javascript library that provides serval simple jQuery like operati
 + `Element.swap(node)`: Swap an element with another
 + `Element.before(node)`: Insert an element before this element
 + `Element.after(node)`: Insert an element after this element
-+ `Element.append(nodes)`: Append given elements at the end of the element
-+ `Element.prepend(nodes)`: Append given elements at the bignning of the element
++ `Element.append(nodes)`: Append elements to this element
++ `Element.prepend(nodes)`: Prepend elements to this element
++ `Element.appendTo(node)`: Append this element to an element
++ `Element.prependTo(node)`: Prepend this element to an element
 + `Element.empty()`: Delete all childnodes from an element
 + `Element.remove()`: Delete an element
 

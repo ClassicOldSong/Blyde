@@ -1,6 +1,9 @@
+/* global console */
 "use strict";
 {
 	const $create = tag => document.createElement(tag);
+
+	const error = (...args) => console.error('[Blyde]', ...args);
 
 	const methods = {
 		$q(selector) {
@@ -42,37 +45,62 @@
 			let parent = this.parentNode;
 			if (parent) {
 				parent.replaceChild(node, this);
+				return node;
+			} else {
+				error(this, 'may not have been attached to document properly.');
+				return this;
 			}
-			return node;
 		},
 
 		swap(node) {
-			let tempDiv = document.createElement('div');
-			methods.replaceWith.call(node, tempDiv);
-			methods.replaceWith.call(this, node);
-			methods.replaceWith.call(tempDiv, this);
-			return node;
+			let thisParent = this.parentNode;
+			let nodeParent = node.parentNode;
+			let thisSibling = this.nextSibling;
+			let nodeSibling = node.nextSibling;
+			if (thisParent && nodeParent) {
+				thisParent.insertBefore(node, thisSibling);
+				nodeParent.insertBefore(this, nodeSibling);
+				return node;
+			} else {
+				let errNodes = [];
+				if (thisParent === null) {
+					errNodes.push(this);
+				}
+				if (nodeParent === null) {
+					errNodes.push(node);
+				}
+				error(...errNodes, 'may not have been attached to document properly.');
+				return this;
+			}
 		},
 
 		before(...nodes) {
-			let tempFragment = document.createDocumentFragment();
-			nodes.reverse();
-			for (let i in nodes) {
-				tempFragment.appendChild(nodes[i]);
+			if (this.parentNode) {
+				let tempFragment = document.createDocumentFragment();
+				nodes.reverse();
+				for (let i in nodes) {
+					tempFragment.appendChild(nodes[i]);
+				}
+				this.parentNode.insertBefore(tempFragment, this);
+			} else {
+				error(this, 'may not have been attached to document properly.');
 			}
-			this.parentNode.insertBefore(tempFragment, this);
 			return this;
 		},
 
 		after(...nodes) {
-			let tempFragment = document.createDocumentFragment();
-			for (let i in nodes) {
-				tempFragment.appendChild(nodes[i]);
-			}
-			if (this.nextSibling) {
-				this.parentNode.insertBefore(tempFragment, this.nextSibling);
+			if (this.parentNode) {
+				let tempFragment = document.createDocumentFragment();
+				for (let i in nodes) {
+					tempFragment.appendChild(nodes[i]);
+				}
+				if (this.nextSibling) {
+					this.parentNode.insertBefore(tempFragment, this.nextSibling);
+				} else {
+					this.parentNode.append(tempFragment);
+				}
 			} else {
-				this.parentNode.append(tempFragment);
+				error(this, 'may not have been attached to document properly.');
 			}
 			return this;
 		},
@@ -95,7 +123,21 @@
 			if (this.firstChild) {
 				this.insertBefore(tempFragment, this.firstChild);
 			} else {
-				this.append(tempFragment);
+				this.appendChild(tempFragment);
+			}
+			return this;
+		},
+
+		appendTo(node) {
+			node.appendChild(this);
+			return this;
+		},
+
+		prependTo(node) {
+			if (node.firstChild) {
+				node.insertBefore(this, node.firstChild);
+			} else {
+				node.appendChild(this);
 			}
 			return this;
 		},
