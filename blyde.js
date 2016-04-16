@@ -55,7 +55,7 @@
 		},
 
 		before(...nodes) {
-			let tempFragment = new DocumentFragment();
+			let tempFragment = document.createDocumentFragment();
 			nodes.reverse();
 			for (let i in nodes) {
 				tempFragment.appendChild(nodes[i]);
@@ -65,7 +65,7 @@
 		},
 
 		after(...nodes) {
-			let tempFragment = new DocumentFragment();
+			let tempFragment = document.createDocumentFragment();
 			for (let i in nodes) {
 				tempFragment.appendChild(nodes[i]);
 			}
@@ -78,7 +78,7 @@
 		},
 
 		append(...nodes) {
-			let tempFragment = new DocumentFragment();
+			let tempFragment = document.createDocumentFragment();
 			for (let i in nodes) {
 				tempFragment.appendChild(nodes[i]);
 			}
@@ -87,7 +87,7 @@
 		},
 
 		prepend(...nodes) {
-			let tempFragment = new DocumentFragment();
+			let tempFragment = document.createDocumentFragment();
 			nodes.reverse();
 			for (let i in nodes) {
 				tempFragment.appendChild(nodes[i]);
