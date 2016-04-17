@@ -5,7 +5,7 @@
 
 	const error = (...args) => console.error('[Blyde]', ...args);
 
-	const methods = {
+	const nodeMethods = {
 		$q(selector) {
 			return this.querySelector(selector);
 		},
@@ -152,14 +152,109 @@
 		}
 	};
 
-	for (let i in methods) {
-		Element.prototype[i] = methods[i];
-	}
+	const listMethods = {
+		addClass(className) {
+			let classes = className.split(' ');
+			for (let i = 0; i < this.length; i++) {
+				this[i].classList.add(...classes);
+			}
+			return this;
+		},
 
-	document.$q = methods.$q;
-	document.$qa = methods.$qa;
+		removeClass(className) {
+			let classes = className.split(' ');
+			for (let i = 0; i < this.length; i++) {
+				this[i].classList.remove(...classes);
+			}
+			return this;
+		},
 
-	window.$q = selector => methods.$q.call(document, selector);
-	window.$qa = selector => methods.$qa.call(document, selector);
-	window.$create = $create;
+		appendTo(node) {
+			let nodes = [];
+			for (let i = 0; i < this.length; i++) {
+				nodes.push(this[i]);
+			}
+			nodeMethods.append.call(node, ...nodes);
+			return this;
+		},
+
+		prependTo(node) {
+			let nodes = [];
+			for (let i = 0; i < this.length; i++) {
+				nodes.push(this[i]);
+			}
+			nodeMethods.prepend.call(node, ...nodes);
+			return this;
+		},
+
+		toggleClass(className) {
+			for (let i = 0; i < this.length; i++) {
+				nodeMethods.toggleClass.call(this[i], className);
+			}
+			return this;
+		},
+
+		empty() {
+			for (let i = 0; i < this.length; i++) {
+				nodeMethods.empty.call(this[i]);
+			}
+			return this;
+		},
+
+		remove() {
+			for (let i = 0; i < this.length; i++) {
+				nodeMethods.remove.call(this[i]);
+			}
+			return this;
+		}
+	};
+
+	const Blyde = {
+		get version() {return 'v0.0.2';}
+	};
+
+
+	Object.defineProperties(Element.prototype, (() => {
+		let properties = {};
+		for (let i in nodeMethods) {
+			properties[i] = {
+				value: nodeMethods[i]
+			};
+		}
+		return properties;
+	})());
+
+	Object.defineProperties(NodeList.prototype, (() => {
+		let properties = {};
+		for (let i in listMethods) {
+			properties[i] = {
+				value: listMethods[i]
+			};
+		}
+		return properties;
+	})());
+
+	Object.defineProperties(document, {
+		'$q': {
+			value: nodeMethods.$q
+		},
+		'$qa': {
+			value: nodeMethods.$qa
+		}
+	});
+
+	Object.defineProperties(window, {
+		'Blyde': {
+			value: Blyde
+		},
+		'$q': {
+			value: nodeMethods.$q.bind(document)
+		},
+		'$qa': {
+			value: nodeMethods.$qa.bind(document)
+		},
+		'$create': {
+			value: $create
+		}
+	});
 }

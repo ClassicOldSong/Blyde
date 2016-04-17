@@ -21,7 +21,18 @@ A blade-sharp javascript library that provides serval simple jQuery like operati
 + `Element.appendTo(node)`: Append this element to an element
 + `Element.prependTo(node)`: Prepend this element to an element
 + `Element.empty()`: Delete all childnodes from an element
-+ `Element.remove()`: Delete an element
++ `Element.remove()`: Delete an element from document
++ `NodeList.addClass('classes')`: Add classes to all elements in this nodelist, use `space` for multiple class names
++ `NodeList.removeClass('classes')`: Remove classes from all elements in this nodelist, use `space` for multiple class names
++ `NodeList.toggleClass('classes')`: Toggle classes for all elements in this nodelist, use `space` for multiple class names
++ `NodeList.appendTo(node)`: Append all elements in this nodelist to an element
++ `NodeList.prependTo(node)`: Prepend all elements in this nodelist to an element
++ `NodeList.empty()`: Delete all childnodes from elements in this nodelist
++ `NodeList.remove()`: Delete all elements in this nodelist from document
+
+## TBD
+- [ ] Plugin API
+- [ ] Events handler
 
 ##License
 [MIT](http://cos.mit-license.org/)
