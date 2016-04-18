@@ -4,6 +4,7 @@
 	const $create = tag => document.createElement(tag);
 
 	const error = (...args) => console.error('[Blyde]', ...args);
+	const warn = (...args) => console.warn('[Blyde]', ...args);
 
 	const nodeMethods = {
 		$q(selector) {
@@ -209,30 +210,27 @@
 		}
 	};
 
-	const Blyde = {
-		get version() {return 'v0.0.2';}
+	const regFn = (name, fns, override) => {
+		for (let i in fns) {
+			let ifOverride = !!override;
+			if (typeof(fns[i].override) !== 'undefined') {
+				ifOverride = fns[i].override;
+			}
+			if (typeof(nodeMethods[i]) !== 'undefined') {
+				if (ifOverride) {
+					nodeMethods[i] = fns[i].value;
+					warn(`Property "${i}" has been overrided by "${name}".`);
+				} else {
+					warn(`Property "${i}" has already been registered, set "override: true" to override.`);
+				}
+			}
+		}
 	};
 
-
-	Object.defineProperties(Element.prototype, (() => {
-		let properties = {};
-		for (let i in nodeMethods) {
-			properties[i] = {
-				value: nodeMethods[i]
-			};
-		}
-		return properties;
-	})());
-
-	Object.defineProperties(NodeList.prototype, (() => {
-		let properties = {};
-		for (let i in listMethods) {
-			properties[i] = {
-				value: listMethods[i]
-			};
-		}
-		return properties;
-	})());
+	const Blyde = {
+		get version() {return 'v0.0.2';},
+		get fn() {return regFn}
+	};
 
 	Object.defineProperties(document, {
 		'$q': {
@@ -247,6 +245,9 @@
 		'Blyde': {
 			value: Blyde
 		},
+		'$': {
+			value: Blyde
+		},
 		'$q': {
 			value: nodeMethods.$q.bind(document)
 		},
@@ -257,4 +258,28 @@
 			value: $create
 		}
 	});
+
+	document.addEventListener('DOMContentLoaded', () => {
+		document.removeEventListener('DOMContentLoaded',false);
+
+		Object.defineProperties(Element.prototype, (() => {
+			let properties = {};
+			for (let i in nodeMethods) {
+				properties[i] = {
+					value: nodeMethods[i]
+				};
+			}
+			return properties;
+		})());
+
+		Object.defineProperties(NodeList.prototype, (() => {
+			let properties = {};
+			for (let i in listMethods) {
+				properties[i] = {
+					value: listMethods[i]
+				};
+			}
+			return properties;
+		})());
+	}, false);
 }

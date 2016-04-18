@@ -2,6 +2,10 @@
 A blade-sharp javascript library that provides serval simple jQuery like operations
 
 ## Usage
++ `Blyde.version`: v0.0.2
++ `Blyde.fn('name', {methods}, override)`: Register a plugin for Blyde
++ `$.version`: Same as `Blyde.version`
++ `$.fn('name', {methods}, override)`: Same as `Blyde.fn()`
 + `window.$create('tag')`: Wrapper for `document.createElement()`
 + `window.$q('selector')`: Wrapper for `document.querySelector()`
 + `window.$qa('selector')`: Wrapper for `document.querySelectorAll()`
@@ -29,6 +33,9 @@ A blade-sharp javascript library that provides serval simple jQuery like operati
 + `NodeList.prependTo(node)`: Prepend all elements in this nodelist to an element
 + `NodeList.empty()`: Delete all childnodes from elements in this nodelist
 + `NodeList.remove()`: Delete all elements in this nodelist from document
+
+## WARNING
+Plugin API is still under development, usage and behavior may vary from versions. Be careful when trying to make a new plugin before Blyde commits its first release.
 
 ## TBD
 - [ ] Plugin API
