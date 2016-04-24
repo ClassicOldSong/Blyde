@@ -2,8 +2,10 @@
 A blade-sharp javascript library that provides serval simple jQuery like operations
 
 ## Usage
++ `Blyde(function)`: Execute the function when document is ready
 + `Blyde.version`: v0.0.2
 + `Blyde.fn('name', {methods}, override)`: Register a plugin for Blyde
++ `$(function)`: Same as `Blyde()`
 + `$.version`: Same as `Blyde.version`
 + `$.fn('name', {methods}, override)`: Same as `Blyde.fn()`
 + `window.$create('tag')`: Wrapper for `document.createElement()`

@@ -210,27 +210,86 @@
 		}
 	};
 
-	const regFn = (name, fns, override) => {
-		for (let i in fns) {
-			let ifOverride = !!override;
-			if (typeof(fns[i].override) !== 'undefined') {
-				ifOverride = fns[i].override;
-			}
+	const regFn = (name, fns, autoNameSpace) => {
+		for (let i in fns.node) {
 			if (typeof(nodeMethods[i]) !== 'undefined') {
-				if (ifOverride) {
-					nodeMethods[i] = fns[i].value;
-					warn(`Property "${i}" has been overrided by "${name}".`);
+				if (autoNameSpace) {
+					nodeMethods[name + i] = fns.node[i];
+					warn(`Node property "${i}" has been set as "${name + i}".`);
 				} else {
-					warn(`Property "${i}" has already been registered, set "override: true" to override.`);
+					warn(`Node property "${i}" in "${name}" conflicts with the original one, set "autoNameSpace" true to get this problem solved.`);
 				}
+			} else {
+				nodeMethods[i] = fns.node[i];
+			}
+		}
+		for (let i in fns.list) {
+			if (typeof(listMethods[i]) !== 'undefined') {
+				if (autoNameSpace) {
+					listMethods[name + i] = fns.list[i];
+					warn(`Nodelist property "${i}" has been set as "${name + i}".`);
+				} else {
+					warn(`Nodelist property "${i}" in "${name}" conflicts with the original one, set "autoNameSpace" true to get this problem solved.`);
+				}
+			} else {
+				listMethods[i] = fns.list[i];
 			}
 		}
 	};
 
-	const Blyde = {
-		get version() {return 'v0.0.2';},
-		get fn() {return regFn}
+	let loaded = false;
+
+	const initFns = [];
+
+	const Blyde = (fn) => {
+		if (typeof(fn) === 'function') {
+			if (loaded) {
+				fn.call(window);
+			} else {
+				initFns.push(fn);
+			}
+		} else {
+			error(fn, 'is not a function!');
+		}
+	}
+
+	const init = function() {
+		document.removeEventListener('DOMContentLoaded', init, false);
+
+		Object.defineProperties(Element.prototype, (() => {
+			let properties = {};
+			for (let i in nodeMethods) {
+				properties[i] = {
+					value: nodeMethods[i]
+				};
+			}
+			return properties;
+		})());
+
+		Object.defineProperties(NodeList.prototype, (() => {
+			let properties = {};
+			for (let i in listMethods) {
+				properties[i] = {
+					value: listMethods[i]
+				};
+			}
+			return properties;
+		})());
+
+		for (let i in initFns) {
+			initFns[i].call(window);
+		}
+		loaded = true;
 	};
+
+	Object.defineProperties(Blyde, {
+		'version': {
+			value: 'v0.0.2'
+		},
+		'fn': {
+			value: regFn
+		}
+	});
 
 	Object.defineProperties(document, {
 		'$q': {
@@ -259,27 +318,5 @@
 		}
 	});
 
-	document.addEventListener('DOMContentLoaded', () => {
-		document.removeEventListener('DOMContentLoaded',false);
-
-		Object.defineProperties(Element.prototype, (() => {
-			let properties = {};
-			for (let i in nodeMethods) {
-				properties[i] = {
-					value: nodeMethods[i]
-				};
-			}
-			return properties;
-		})());
-
-		Object.defineProperties(NodeList.prototype, (() => {
-			let properties = {};
-			for (let i in listMethods) {
-				properties[i] = {
-					value: listMethods[i]
-				};
-			}
-			return properties;
-		})());
-	}, false);
+	document.addEventListener('DOMContentLoaded', init, false);
 }

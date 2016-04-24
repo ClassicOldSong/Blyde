@@ -5,19 +5,23 @@
 		console.log('This is an example:', this);
 	};
 	$.fn('ExamplePlugin', {
-		testFunc: {
-			value: ExampleFunc // New method to be registered
-		},
-		toggleClass: {
-			value: 'Not overrided',
-			override: false // Not overrided
-		},
-		addClass: {
-			value: function(...args) {
+		node: {
+			testFunc: ExampleFunc, // New method to be registered
+			toggleClass: 'Namespaced', // Will be namespaced
+			addClass(...args) {
 				this.classList.add(...args);
 				return this;
-			},
-			override: true // Overrided the original method
+			}
+		},
+		list: {
+			testFunc: ExampleFunc, // New method to be registered
+			toggleClass: 'Namespaced', // Will be namespaced
+			addClass(...args) {
+				for (let i = 0; i < this.length; i++) {
+					this[i].classList.add(...args);
+				}
+				return this;
+			}
 		}
 	}, true);
 }
