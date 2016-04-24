@@ -150,6 +150,22 @@
 		remove() {
 			this.parentNode.removeChild(this);
 			return this;
+		},
+
+		onClick(fn) {
+			if (typeof(fn) === 'function') {
+				this.addEventListener('click', fn, false);
+			} else {
+				error(fn, 'is not a function!');
+			}
+		},
+
+		onDblClick(fn) {
+			if (typeof(fn) === 'function') {
+				this.addEventListener('dblclick', fn, false);
+			} else {
+				error(fn, 'is not a function!');
+			}
 		}
 	};
 
@@ -207,6 +223,26 @@
 				nodeMethods.remove.call(this[i]);
 			}
 			return this;
+		},
+
+		onClick(fn) {
+			if (typeof(fn) === 'function') {
+				for (let i = 0; i < this.length; i++) {
+					this[i].addEventListener('click', fn, false);
+				}
+			} else {
+				error(fn, 'is not a function!');
+			}
+		},
+
+		onDblClick(fn) {
+			if (typeof(fn) === 'function') {
+				for (let i = 0; i < this.length; i++) {
+					this[i].addEventListener('dblclick', fn, false);
+				}
+			} else {
+				error(fn, 'is not a function!');
+			}
 		}
 	};
 
@@ -251,7 +287,7 @@
 		} else {
 			error(fn, 'is not a function!');
 		}
-	}
+	};
 
 	const init = function() {
 		document.removeEventListener('DOMContentLoaded', init, false);
