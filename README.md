@@ -15,7 +15,7 @@ A blade-sharp javascript library that provides serval simple jQuery like operati
 + `document.$qa('selector')`: Same as `window.$qa('selector')`
 + `Element.$q('selector')`: Wrapper for `Element.querySelector()`
 + `Element.$qa('selector')`: Wrapper for `Element.querySelectorAll()`
-+ `Element.addClass('classes')`: Add classes to an element, use `space` for multiple class names
++ `Element.addClass('classe names')`: Add classes to an element, use `space` for multiple class names
 + `Element.removeClass('class names')`: Remove classes from an element, use `space` for multiple class names
 + `Element.toggleClass('class names')`: Toggle classes for an element, use `space` for multiple class names
 + `Element.replaceWith(node)`: Replace element with a new element
@@ -31,7 +31,7 @@ A blade-sharp javascript library that provides serval simple jQuery like operati
 + `Element.on(type, listener[, useCapture])`: Wrapper for `Element.addEventListener()`
 + `Element.un(type, listener[, useCapture])`: Wrapper for `Element.removeEventListener()`
 
-+ `NodeList.addClass('classes')`: Add classes to all elements in this nodelist, use `space` for multiple class names
++ `NodeList.addClass('classe names')`: Add classes to all elements in this nodelist, use `space` for multiple class names
 + `NodeList.removeClass('class names')`: Remove classes from all elements in this nodelist, use `space` for multiple class names
 + `NodeList.toggleClass('class names')`: Toggle classes for all elements in this nodelist, use `space` for multiple class names
 + `NodeList.appendTo(node)`: Append all elements in this nodelist to an element
@@ -40,6 +40,16 @@ A blade-sharp javascript library that provides serval simple jQuery like operati
 + `NodeList.remove()`: Delete all elements in this nodelist from document
 + `NodeList.on(type, listener[, useCapture])`: Add event listener to all elements in this nodelist
 + `NodeList.un(type, listener[, useCapture])`: Remove event listener for all elements in this nodelist
+
+## Build from source
+```
+$ git clone https://github.com/ClassicOldSong/Blyde.git
+$ cd Blyde
+$ npm install
+$ gulp
+```
+Then you can get the fresh-built ES5lized `blyde.js` and minified `blyde.min.js` at the `dist` folder
+**Note:** Warning and error messages were removed from the minified version
 
 ## WARNING
 Plugin API is still under development, be careful when trying to make a new plugin before Blyde commits its first release.
