@@ -152,21 +152,21 @@
 			return this;
 		},
 
-		onClick(fn) {
+		on(type, fn, useCapture) {
 			if (typeof(fn) === 'function') {
-				this.addEventListener('click', fn, false);
+				this.addEventListener(type, fn, !!useCapture);
 			} else {
 				error(fn, 'is not a function!');
 			}
 		},
 
-		onDblClick(fn) {
+		un(type, fn, useCapture) {
 			if (typeof(fn) === 'function') {
-				this.addEventListener('dblclick', fn, false);
+				this.removeEventListener(type, fn, !!useCapture);
 			} else {
 				error(fn, 'is not a function!');
 			}
-		}
+		},
 	};
 
 	const listMethods = {
@@ -225,20 +225,20 @@
 			return this;
 		},
 
-		onClick(fn) {
+		on(type, fn, useCapture) {
 			if (typeof(fn) === 'function') {
 				for (let i = 0; i < this.length; i++) {
-					this[i].addEventListener('click', fn, false);
+					this[i].addEventListener(type, fn, !!useCapture);
 				}
 			} else {
 				error(fn, 'is not a function!');
 			}
 		},
 
-		onDblClick(fn) {
+		un(type, fn, useCapture) {
 			if (typeof(fn) === 'function') {
 				for (let i = 0; i < this.length; i++) {
-					this[i].addEventListener('dblclick', fn, false);
+					this[i].removeEventListener(type, fn, !!useCapture);
 				}
 			} else {
 				error(fn, 'is not a function!');
@@ -246,29 +246,65 @@
 		}
 	};
 
+	const methods = [];
+	const methodList = {
+		node: [],
+		list: []
+	};
+	Object.defineProperties(methods, {
+		node: {
+			value: (() => {
+				let nodeContainer = [];
+				for (let i in nodeMethods) {
+					Object.defineProperty(nodeContainer, i, {
+						value: nodeMethods[i]
+					});
+					methodList.node.push(i);
+				}
+				return nodeContainer;
+			})()
+		},
+		list: {
+			value: (() => {
+				let listContainer = [];
+				for (let i in listMethods) {
+					Object.defineProperty(listContainer, i, {
+						value: listMethods[i]
+					});
+					methodList.list.push(i);
+				}
+				return listContainer;
+			})()
+		}
+	});
+
 	const regFn = (name, fns, autoNameSpace) => {
 		for (let i in fns.node) {
-			if (typeof(nodeMethods[i]) !== 'undefined') {
+			if (typeof(methods.node[i]) !== 'undefined') {
 				if (autoNameSpace) {
-					nodeMethods[name + i] = fns.node[i];
+					Object.defineProperty(methods.node, name + i, {value: fns.node[i]});
+					methodList.node.push(name + i);
 					warn(`Node property "${i}" has been set as "${name + i}".`);
 				} else {
 					warn(`Node property "${i}" in "${name}" conflicts with the original one, set "autoNameSpace" true to get this problem solved.`);
 				}
 			} else {
-				nodeMethods[i] = fns.node[i];
+				Object.defineProperty(methods.node, i, {value: fns.node[i]});
+				methodList.node.push(i);
 			}
 		}
 		for (let i in fns.list) {
-			if (typeof(listMethods[i]) !== 'undefined') {
+			if (typeof(methods.list[i]) !== 'undefined') {
 				if (autoNameSpace) {
-					listMethods[name + i] = fns.list[i];
+					Object.defineProperty(methods.list, name + i, {value: fns.list[i]});
+					methodList.node.push(name + i);
 					warn(`Nodelist property "${i}" has been set as "${name + i}".`);
 				} else {
 					warn(`Nodelist property "${i}" in "${name}" conflicts with the original one, set "autoNameSpace" true to get this problem solved.`);
 				}
 			} else {
-				listMethods[i] = fns.list[i];
+				Object.defineProperty(methods.list, i, {value: fns.list[i]});
+				methodList.node.push(i);
 			}
 		}
 	};
@@ -294,9 +330,9 @@
 
 		Object.defineProperties(Element.prototype, (() => {
 			let properties = {};
-			for (let i in nodeMethods) {
-				properties[i] = {
-					value: nodeMethods[i]
+			for (let i in methodList.node) {
+				properties[methodList.node[i]] = {
+					value: methods.node[methodList.node[i]]
 				};
 			}
 			return properties;
@@ -304,9 +340,9 @@
 
 		Object.defineProperties(NodeList.prototype, (() => {
 			let properties = {};
-			for (let i in listMethods) {
-				properties[i] = {
-					value: listMethods[i]
+			for (let i in methodList.list) {
+				properties[methodList.list[i]] = {
+					value: methods.list[methodList.list[i]]
 				};
 			}
 			return properties;
@@ -320,10 +356,13 @@
 
 	Object.defineProperties(Blyde, {
 		'version': {
-			value: 'v0.0.2'
+			value: 'Blyde v0.0.2'
 		},
 		'fn': {
 			value: regFn
+		},
+		'methods': {
+			value: methods
 		}
 	});
 
