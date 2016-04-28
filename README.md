@@ -49,6 +49,7 @@ $ npm install
 $ gulp
 ```
 Then you can get the fresh-built ES5lized `blyde.js` and minified `blyde.min.js` at the `dist` folder
+
 **Note:** Warning and error messages were removed from the minified version
 
 ## WARNING
