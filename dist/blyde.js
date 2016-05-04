@@ -1,4 +1,4 @@
-/* global console */
+/* global console, Velocity */
 "use strict";
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
@@ -327,28 +327,28 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 				if (typeof methods.list[_i] !== 'undefined') {
 					if (autoNameSpace) {
 						Object.defineProperty(methods.list, name + _i, { value: fns.list[_i] });
-						methodList.node.push(name + _i);
+						methodList.list.push(name + _i);
 						warn('Nodelist property "' + _i + '" has been set as "' + (name + _i) + '".');
 					} else {
 						warn('Nodelist property "' + _i + '" in "' + name + '" conflicts with the original one, set "autoNameSpace" true to get this problem solved.');
 					}
 				} else {
 					Object.defineProperty(methods.list, _i, { value: fns.list[_i] });
-					methodList.node.push(_i);
+					methodList.list.push(_i);
 				}
 			}
 		};
 
 		var loaded = false;
 
-		var initFns = [];
+		var initQuery = [];
 
 		var Blyde = function Blyde(fn) {
 			if (typeof fn === 'function') {
 				if (loaded) {
 					fn.call(window);
 				} else {
-					initFns.push(fn);
+					initQuery.push(fn);
 				}
 			} else {
 				error(fn, 'is not a function!');
@@ -357,6 +357,33 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
 		var init = function init() {
 			document.removeEventListener('DOMContentLoaded', init, false);
+
+			if (window.Velocity) {
+				regFn('blyde', {
+					node: {
+						velocity: function velocity() {
+							for (var _len7 = arguments.length, args = Array(_len7), _key7 = 0; _key7 < _len7; _key7++) {
+								args[_key7] = arguments[_key7];
+							}
+
+							Velocity.apply(undefined, [this].concat(args));
+							return this;
+						}
+					},
+					list: {
+						velocity: function velocity() {
+							for (var _len8 = arguments.length, args = Array(_len8), _key8 = 0; _key8 < _len8; _key8++) {
+								args[_key8] = arguments[_key8];
+							}
+
+							for (var i = 0; i < this.length; i++) {
+								Velocity.apply(undefined, [this[i]].concat(args));
+							}
+							return this;
+						}
+					}
+				}, true);
+			}
 
 			Object.defineProperties(Element.prototype, function () {
 				var properties = {};
@@ -378,15 +405,15 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 				return properties;
 			}());
 
-			for (var i in initFns) {
-				initFns[i].call(window);
+			for (var i in initQuery) {
+				initQuery[i].call(window);
 			}
 			loaded = true;
 		};
 
 		Object.defineProperties(Blyde, {
 			'version': {
-				value: 'Blyde v0.0.3 beta'
+				value: 'Blyde v0.0.2 beta'
 			},
 			'fn': {
 				value: regFn
@@ -424,5 +451,8 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 		});
 
 		document.addEventListener('DOMContentLoaded', init, false);
+		if (document.readyState === "interactive" || document.readyState === "complete") {
+			init();
+		}
 	})();
 }

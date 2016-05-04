@@ -1,4 +1,4 @@
-/* global console */
+/* global console, Velocity */
 "use strict";
 {
 	const $create = tag => document.createElement(tag);
@@ -297,28 +297,28 @@
 			if (typeof(methods.list[i]) !== 'undefined') {
 				if (autoNameSpace) {
 					Object.defineProperty(methods.list, name + i, {value: fns.list[i]});
-					methodList.node.push(name + i);
+					methodList.list.push(name + i);
 					warn(`Nodelist property "${i}" has been set as "${name + i}".`);
 				} else {
 					warn(`Nodelist property "${i}" in "${name}" conflicts with the original one, set "autoNameSpace" true to get this problem solved.`);
 				}
 			} else {
 				Object.defineProperty(methods.list, i, {value: fns.list[i]});
-				methodList.node.push(i);
+				methodList.list.push(i);
 			}
 		}
 	};
 
 	let loaded = false;
 
-	const initFns = [];
+	const initQuery = [];
 
 	const Blyde = (fn) => {
 		if (typeof(fn) === 'function') {
 			if (loaded) {
 				fn.call(window);
 			} else {
-				initFns.push(fn);
+				initQuery.push(fn);
 			}
 		} else {
 			error(fn, 'is not a function!');
@@ -327,6 +327,25 @@
 
 	const init = function() {
 		document.removeEventListener('DOMContentLoaded', init, false);
+
+		if (window.Velocity) {
+			regFn('blyde', {
+				node: {
+					velocity(...args) {
+						Velocity(this, ...args);
+						return this;
+					}
+				},
+				list: {
+					velocity(...args) {
+						for (let i = 0; i < this.length; i++) {
+							Velocity(this[i], ...args);
+						}
+						return this;
+					}
+				}
+			}, true);
+		}
 
 		Object.defineProperties(Element.prototype, (() => {
 			let properties = {};
@@ -348,15 +367,15 @@
 			return properties;
 		})());
 
-		for (let i in initFns) {
-			initFns[i].call(window);
+		for (let i in initQuery) {
+			initQuery[i].call(window);
 		}
 		loaded = true;
 	};
 
 	Object.defineProperties(Blyde, {
 		'version': {
-			value: 'Blyde v0.0.3 beta'
+			value: 'Blyde v0.0.2 beta'
 		},
 		'fn': {
 			value: regFn
@@ -394,4 +413,7 @@
 	});
 
 	document.addEventListener('DOMContentLoaded', init, false);
+	if (document.readyState === "interactive" || document.readyState === "complete") {
+		init();
+	}
 }

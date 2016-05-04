@@ -41,6 +41,20 @@ A blade-sharp javascript library that provides serval simple jQuery like operati
 + `NodeList.on(type, listener[, useCapture])`: Add event listener to all elements in this nodelist
 + `NodeList.un(type, listener[, useCapture])`: Remove event listener for all elements in this nodelist
 
+## Animation
+To use animation, simply add [Velocity.js](http://julian.com/research/velocity/) into your HTML before document is ready:
+
+``` javascript
+<script src="js/velocity.min.js"></script>
+```
+Then you can use:
++ `Element.velocity(arguments)`: Animate this element
++ `NodeList.velocity(arguments)`: Animate all elements in this nodelist
+
+Detial usage please read the instruction of [Velocity.js](http://julian.com/research/velocity/)
+
+The usage of Velocity.js with Blyde should be similar to that with jQuery.
+
 ## Build from source
 ```
 $ git clone https://github.com/ClassicOldSong/Blyde.git
