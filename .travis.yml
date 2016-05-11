@@ -1,6 +1,7 @@
-before_script:
-  - npm install -g gulp
 script: gulp
 language: node_js
 node_js:
   - "5"
+cache:
+  directories:
+  - .node_modules
