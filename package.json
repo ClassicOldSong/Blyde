@@ -2,6 +2,11 @@
   "name": "blyde",
   "version": "0.0.3",
   "description": "A blade-sharp javascript library that provides serval simple jQuery like operations",
+  "scripts": {
+    "test": "gulp",
+    "dev": "gulp",
+    "build": "gulp"
+    },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ClassicOldSong/Blyde.git"
