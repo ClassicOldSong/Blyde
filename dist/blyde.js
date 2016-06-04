@@ -28,6 +28,8 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 			return (_console2 = console).warn.apply(_console2, ['[Blyde]'].concat(args));
 		};
 
+		var safeZone = document.createDocumentFragment();
+
 		var nodeMethods = {
 			$q: function $q(selector) {
 				return this.querySelector(selector);
@@ -183,6 +185,10 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 				this.parentNode.removeChild(this);
 				return this;
 			},
+			safeRemove: function safeRemove() {
+				safeZone.appendChild(this);
+				return this;
+			},
 			on: function on(type, fn, useCapture) {
 				if (typeof fn === 'function') {
 					this.addEventListener(type, fn, !!useCapture);
@@ -253,6 +259,12 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 			remove: function remove() {
 				for (var i = 0; i < this.length; i++) {
 					nodeMethods.remove.call(this[i]);
+				}
+				return this;
+			},
+			safeRemove: function safeRemove() {
+				for (var i = 0; i < this.length; i++) {
+					nodeMethods.safeRemove.call(this[i]);
 				}
 				return this;
 			},

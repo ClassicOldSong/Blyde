@@ -28,6 +28,7 @@ A blade-sharp javascript library that provides serval simple jQuery like operati
 + `Element.prependTo(node)`: Prepend this element to an element
 + `Element.empty()`: Delete all childnodes from an element
 + `Element.remove()`: Delete an element from document
++ `Element.safeRemove()`: Remove an element from document while all event listeners are still maintained
 + `Element.on(type, listener[, useCapture])`: Wrapper for `Element.addEventListener()`
 + `Element.un(type, listener[, useCapture])`: Wrapper for `Element.removeEventListener()`
 
@@ -38,6 +39,7 @@ A blade-sharp javascript library that provides serval simple jQuery like operati
 + `NodeList.prependTo(node)`: Prepend all elements in this nodelist to an element
 + `NodeList.empty()`: Delete all childnodes from elements in this nodelist
 + `NodeList.remove()`: Delete all elements in this nodelist from document
++ `NodeList.safeRemove()`: Remove all elements in this nodelist from document while all event listeners are still maintained
 + `NodeList.on(type, listener[, useCapture])`: Add event listener to all elements in this nodelist
 + `NodeList.un(type, listener[, useCapture])`: Remove event listener for all elements in this nodelist
 

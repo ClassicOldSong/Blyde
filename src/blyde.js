@@ -6,6 +6,8 @@
 	const error = (...args) => console.error('[Blyde]', ...args);
 	const warn = (...args) => console.warn('[Blyde]', ...args);
 
+	const safeZone = document.createDocumentFragment();
+
 	const nodeMethods = {
 		$q(selector) {
 			return this.querySelector(selector);
@@ -152,6 +154,11 @@
 			return this;
 		},
 
+		safeRemove() {
+			safeZone.appendChild(this);
+			return this;
+		},
+
 		on(type, fn, useCapture) {
 			if (typeof(fn) === 'function') {
 				this.addEventListener(type, fn, !!useCapture);
@@ -221,6 +228,13 @@
 		remove() {
 			for (let i = 0; i < this.length; i++) {
 				nodeMethods.remove.call(this[i]);
+			}
+			return this;
+		},
+
+		safeRemove() {
+			for (let i = 0; i < this.length; i++) {
+				nodeMethods.safeRemove.call(this[i]);
 			}
 			return this;
 		},
