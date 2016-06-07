@@ -441,6 +441,12 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 			},
 			'$qa': {
 				value: nodeMethods.$qa
+			},
+			'on': {
+				value: nodeMethods.on
+			},
+			'un': {
+				value: nodeMethods.un
 			}
 		});
 
@@ -459,6 +465,12 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 			},
 			'$create': {
 				value: $create
+			},
+			'on': {
+				value: nodeMethods.on
+			},
+			'un': {
+				value: nodeMethods.un
 			}
 		});
 

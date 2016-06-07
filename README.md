@@ -11,8 +11,12 @@ A blade-sharp javascript library that provides serval simple jQuery like operati
 + `window.$create('tag')`: Wrapper for `document.createElement()`
 + `window.$q('selector')`: Wrapper for `document.querySelector()`
 + `window.$qa('selector')`: Wrapper for `document.querySelectorAll()`
++ `window.on(type, listener[, useCapture])`: Wrapper for `window.addEventListener()`
++ `window.un(type, listener[, useCapture])`: Wrapper for `window.removeEventListener()`
 + `document.$q('selector')`: Same as `window.$q('selector')`
 + `document.$qa('selector')`: Same as `window.$qa('selector')`
++ `document.on(type, listener[, useCapture])`: Wrapper for `document.addEventListener()`
++ `document.un(type, listener[, useCapture])`: Wrapper for `document.removeEventListener()`
 + `Element.$q('selector')`: Wrapper for `Element.querySelector()`
 + `Element.$qa('selector')`: Wrapper for `Element.querySelectorAll()`
 + `Element.addClass('classe names')`: Add classes to an element, use `space` for multiple class names

@@ -405,6 +405,12 @@
 		},
 		'$qa': {
 			value: nodeMethods.$qa
+		},
+		'on': {
+			value: nodeMethods.on
+		},
+		'un': {
+			value: nodeMethods.un
 		}
 	});
 
@@ -423,6 +429,12 @@
 		},
 		'$create': {
 			value: $create
+		},
+		'on': {
+			value: nodeMethods.on
+		},
+		'un': {
+			value: nodeMethods.un
 		}
 	});
 
