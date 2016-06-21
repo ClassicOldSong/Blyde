@@ -10,8 +10,8 @@ gulp.task('default', () => {
 					presets: ['es2015']
 				}))
 				.pipe(gulp.dest('dist'))
-				.pipe(replace(/var (error|warn)(.*)??;/g, ''))
-				.pipe(replace(/(error|warn)\((.*)??\);/g, ''))
+				.pipe(replace(/var (error|warn)(.*)??;\n/g, ''))
+				.pipe(replace(/(error|warn)\((.*)??\);\n/g, ''))
 				.pipe(uglify())
 				.pipe(rename({
 					suffix: '.min'

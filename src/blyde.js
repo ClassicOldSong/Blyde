@@ -109,6 +109,10 @@
 		},
 
 		append(...nodes) {
+			if ([1,9,11].indexOf(this.nodeType) === -1) {
+				error('This node type does not support method "append".');
+				return;
+			};
 			let tempFragment = document.createDocumentFragment();
 			for (let i in nodes) {
 				tempFragment.appendChild(nodes[i]);
@@ -118,6 +122,10 @@
 		},
 
 		prepend(...nodes) {
+			if ([1,9,11].indexOf(this.nodeType) === -1) {
+				error('This node type does not support method "prepend".');
+				return;
+			};
 			let tempFragment = document.createDocumentFragment();
 			nodes.reverse();
 			for (let i in nodes) {
@@ -361,7 +369,7 @@
 			}, true);
 		}
 
-		Object.defineProperties(Element.prototype, (() => {
+		Object.defineProperties(Node.prototype, (() => {
 			let properties = {};
 			for (let i in methodList.node) {
 				properties[methodList.node[i]] = {
@@ -389,7 +397,7 @@
 
 	Object.defineProperties(Blyde, {
 		'version': {
-			value: 'Blyde v0.0.2 beta'
+			value: 'Blyde v0.0.4 alpha'
 		},
 		'fn': {
 			value: regFn

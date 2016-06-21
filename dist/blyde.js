@@ -136,6 +136,10 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 				return this;
 			},
 			append: function append() {
+				if ([1, 9, 11].indexOf(this.nodeType) === -1) {
+					error('This node type does not support method "append".');
+					return;
+				};
 				var tempFragment = document.createDocumentFragment();
 
 				for (var _len5 = arguments.length, nodes = Array(_len5), _key5 = 0; _key5 < _len5; _key5++) {
@@ -149,6 +153,10 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 				return this;
 			},
 			prepend: function prepend() {
+				if ([1, 9, 11].indexOf(this.nodeType) === -1) {
+					error('This node type does not support method "prepend".');
+					return;
+				};
 				var tempFragment = document.createDocumentFragment();
 
 				for (var _len6 = arguments.length, nodes = Array(_len6), _key6 = 0; _key6 < _len6; _key6++) {
@@ -397,7 +405,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 				}, true);
 			}
 
-			Object.defineProperties(Element.prototype, function () {
+			Object.defineProperties(Node.prototype, function () {
 				var properties = {};
 				for (var i in methodList.node) {
 					properties[methodList.node[i]] = {
@@ -425,7 +433,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
 		Object.defineProperties(Blyde, {
 			'version': {
-				value: 'Blyde v0.0.2 beta'
+				value: 'Blyde v0.0.4 alpha'
 			},
 			'fn': {
 				value: regFn
