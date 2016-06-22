@@ -112,7 +112,7 @@
 			if ([1,9,11].indexOf(this.nodeType) === -1) {
 				error('This node type does not support method "append".');
 				return;
-			};
+			}
 			let tempFragment = document.createDocumentFragment();
 			for (let i in nodes) {
 				tempFragment.appendChild(nodes[i]);
@@ -125,7 +125,7 @@
 			if ([1,9,11].indexOf(this.nodeType) === -1) {
 				error('This node type does not support method "prepend".');
 				return;
-			};
+			}
 			let tempFragment = document.createDocumentFragment();
 			nodes.reverse();
 			for (let i in nodes) {
@@ -302,31 +302,35 @@
 
 	const regFn = (name, fns, autoNameSpace) => {
 		for (let i in fns.node) {
+			let fnName = i;
 			if (typeof(methods.node[i]) !== 'undefined') {
 				if (autoNameSpace) {
-					Object.defineProperty(methods.node, name + i, {value: fns.node[i]});
-					methodList.node.push(name + i);
+					fnName = name + i;
 					warn(`Node property "${i}" has been set as "${name + i}".`);
 				} else {
 					warn(`Node property "${i}" in "${name}" conflicts with the original one, set "autoNameSpace" true to get this problem solved.`);
 				}
-			} else {
-				Object.defineProperty(methods.node, i, {value: fns.node[i]});
-				methodList.node.push(i);
+			}
+			Object.defineProperty(methods.node, fnName, {value: fns.node[i]});
+			methodList.node.push(fnName);
+			if (document.readyState === "interactive" || document.readyState === "complete") {
+				Object.defineProperty(Node.prototype, fnName, {value: fns.node[i]});
 			}
 		}
 		for (let i in fns.list) {
+			let fnName = i;
 			if (typeof(methods.list[i]) !== 'undefined') {
 				if (autoNameSpace) {
-					Object.defineProperty(methods.list, name + i, {value: fns.list[i]});
-					methodList.list.push(name + i);
+					fnName = name + i;
 					warn(`Nodelist property "${i}" has been set as "${name + i}".`);
 				} else {
 					warn(`Nodelist property "${i}" in "${name}" conflicts with the original one, set "autoNameSpace" true to get this problem solved.`);
 				}
-			} else {
-				Object.defineProperty(methods.list, i, {value: fns.list[i]});
-				methodList.list.push(i);
+			}
+			Object.defineProperty(methods.list, fnName, {value: fns.list[i]});
+			methodList.list.push(fnName);
+			if (document.readyState === "interactive" || document.readyState === "complete") {
+				Object.defineProperty(NodeList.prototype, fnName, {value: fns.node[i]});
 			}
 		}
 	};
@@ -447,7 +451,5 @@
 	});
 
 	document.addEventListener('DOMContentLoaded', init, false);
-	if (document.readyState === "interactive" || document.readyState === "complete") {
-		init();
-	}
+	if (document.readyState === "interactive" || document.readyState === "complete") init();
 }

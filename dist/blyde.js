@@ -139,7 +139,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 				if ([1, 9, 11].indexOf(this.nodeType) === -1) {
 					error('This node type does not support method "append".');
 					return;
-				};
+				}
 				var tempFragment = document.createDocumentFragment();
 
 				for (var _len5 = arguments.length, nodes = Array(_len5), _key5 = 0; _key5 < _len5; _key5++) {
@@ -156,7 +156,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 				if ([1, 9, 11].indexOf(this.nodeType) === -1) {
 					error('This node type does not support method "prepend".');
 					return;
-				};
+				}
 				var tempFragment = document.createDocumentFragment();
 
 				for (var _len6 = arguments.length, nodes = Array(_len6), _key6 = 0; _key6 < _len6; _key6++) {
@@ -330,31 +330,35 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
 		var regFn = function regFn(name, fns, autoNameSpace) {
 			for (var i in fns.node) {
+				var fnName = i;
 				if (typeof methods.node[i] !== 'undefined') {
 					if (autoNameSpace) {
-						Object.defineProperty(methods.node, name + i, { value: fns.node[i] });
-						methodList.node.push(name + i);
+						fnName = name + i;
 						warn('Node property "' + i + '" has been set as "' + (name + i) + '".');
 					} else {
 						warn('Node property "' + i + '" in "' + name + '" conflicts with the original one, set "autoNameSpace" true to get this problem solved.');
 					}
-				} else {
-					Object.defineProperty(methods.node, i, { value: fns.node[i] });
-					methodList.node.push(i);
+				}
+				Object.defineProperty(methods.node, fnName, { value: fns.node[i] });
+				methodList.node.push(fnName);
+				if (document.readyState === "interactive" || document.readyState === "complete") {
+					Object.defineProperty(Node.prototype, fnName, { value: fns.node[i] });
 				}
 			}
 			for (var _i in fns.list) {
+				var _fnName = _i;
 				if (typeof methods.list[_i] !== 'undefined') {
 					if (autoNameSpace) {
-						Object.defineProperty(methods.list, name + _i, { value: fns.list[_i] });
-						methodList.list.push(name + _i);
+						_fnName = name + _i;
 						warn('Nodelist property "' + _i + '" has been set as "' + (name + _i) + '".');
 					} else {
 						warn('Nodelist property "' + _i + '" in "' + name + '" conflicts with the original one, set "autoNameSpace" true to get this problem solved.');
 					}
-				} else {
-					Object.defineProperty(methods.list, _i, { value: fns.list[_i] });
-					methodList.list.push(_i);
+				}
+				Object.defineProperty(methods.list, _fnName, { value: fns.list[_i] });
+				methodList.list.push(_fnName);
+				if (document.readyState === "interactive" || document.readyState === "complete") {
+					Object.defineProperty(NodeList.prototype, _fnName, { value: fns.node[_i] });
 				}
 			}
 		};
@@ -483,8 +487,6 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 		});
 
 		document.addEventListener('DOMContentLoaded', init, false);
-		if (document.readyState === "interactive" || document.readyState === "complete") {
-			init();
-		}
+		if (document.readyState === "interactive" || document.readyState === "complete") init();
 	})();
 }

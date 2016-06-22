@@ -1,6 +1,6 @@
 {
   "name": "blyde",
-  "version": "0.0.4-alpha",
+  "version": "0.0.4",
   "description": "A blade-sharp javascript library that provides serval simple jQuery like operations",
   "scripts": {
     "test": "gulp",

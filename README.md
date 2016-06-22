@@ -3,7 +3,7 @@ A blade-sharp javascript library that provides serval simple jQuery like operati
 
 ## Usage
 + `Blyde(function)`: Execute the function when document is ready
-+ `Blyde.version`: Blyde v0.0.4 alpha
++ `Blyde.version`: Blyde v0.0.4
 + `Blyde.fn('name', {node:{node methods}, list:{nodelist methods}}, autonamespace)`: Register a plugin for Blyde (Set autonamespace true to solve conflicts, otherwise the original methods will be maintained)
 + `$(function)`: Same as `Blyde()`
 + `$.version`: Same as `Blyde.version`
@@ -71,9 +71,6 @@ $ gulp
 Then you can get the fresh-built ES5lized `blyde.js` and minified `blyde.min.js` at the `dist` folder
 
 **Note:** Warning and error messages were removed from the minified version
-
-## WARNING
-Plugin API is still under development, be careful when trying to make a new plugin before Blyde commits its first release.
 
 ## TBD
 - [x] Plugin API
