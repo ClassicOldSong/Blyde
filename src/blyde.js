@@ -401,7 +401,7 @@
 
 	Object.defineProperties(Blyde, {
 		'version': {
-			value: 'Blyde v0.0.4 alpha'
+			value: 'Blyde v0.0.4'
 		},
 		'fn': {
 			value: regFn

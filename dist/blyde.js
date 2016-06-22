@@ -437,7 +437,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
 		Object.defineProperties(Blyde, {
 			'version': {
-				value: 'Blyde v0.0.4 alpha'
+				value: 'Blyde v0.0.4'
 			},
 			'fn': {
 				value: regFn
