@@ -1,4 +1,6 @@
 # Blyde
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://raw.githubusercontent.com/ClassicOldSong/Blyde/master/LICENSE) [![npm](https://img.shields.io/npm/dt/blyde.svg?style=flat-square)](https://www.npmjs.com/package/blyde)
+
 A blade-sharp javascript library that provides serval simple jQuery like operations
 
 ## Usage
