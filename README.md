@@ -59,7 +59,7 @@ Then you can use:
 + `Node.velocity(arguments)`: Animate this element
 + `NodeList.velocity(arguments)`: Animate all elements in this nodelist
 
-Detial usage please read the instruction of [Velocity.js](http://julian.com/research/velocity/)
+Detail usage please read the instruction of [Velocity.js](http://julian.com/research/velocity/)
 
 The usage of Velocity.js with Blyde should be similar to that with jQuery.
 
