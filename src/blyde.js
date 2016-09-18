@@ -115,8 +115,8 @@
 		},
 
 		qa(selector) {
-			if (selector instanceof NodeList) return new $nodeList(selector)
-			return new $nodeList(this.$el.querySelectorAll(selector))
+			if (selector instanceof NodeList) return new $nodeList(...selector)
+			return new $nodeList(...this.$el.querySelectorAll(selector))
 		},
 
 		addClass(className) {

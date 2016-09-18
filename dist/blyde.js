@@ -180,8 +180,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 				if (typeof selected.$id !== 'undefined' && selected.$id in $cache) return $cache[selected.$id];else return new $node(selected);
 			},
 			qa: function qa(selector) {
-				if (selector instanceof NodeList) return new $nodeList(selector);
-				return new $nodeList(this.$el.querySelectorAll(selector));
+				if (selector instanceof NodeList) return new (Function.prototype.bind.apply($nodeList, [null].concat(_toConsumableArray(selector))))();
+				return new (Function.prototype.bind.apply($nodeList, [null].concat(_toConsumableArray(this.$el.querySelectorAll(selector)))))();
 			},
 			addClass: function addClass(className) {
 				var _$el$classList;
