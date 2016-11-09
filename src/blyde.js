@@ -417,13 +417,14 @@
 		}
 	}
 
+	document.addEventListener('DOMContentLoaded', init, false)
+	if (document.readyState === "interactive" || document.readyState === "complete") init()
+
 	if (typeof module !== 'undefined' && module.exports) {
 		module.exports = Blyde
 	} else if (typeof define === 'function' && define.amd) {
 		define(() => Blyde)
 	} else {
-		document.addEventListener('DOMContentLoaded', init, false)
-		if (document.readyState === "interactive" || document.readyState === "complete") init()
 		Object.defineProperties(window, {
 			Blyde: {
 				value: Blyde

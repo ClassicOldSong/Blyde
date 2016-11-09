@@ -246,7 +246,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 			},
 			before: function before() {
 				if (this.$el.parentNode) {
-					var _tempFragment = document.createDocumentFragment();
+					var tempFragment = document.createDocumentFragment();
 
 					for (var _len5 = arguments.length, nodes = Array(_len5), _key5 = 0; _key5 < _len5; _key5++) {
 						nodes[_key5] = arguments[_key5];
@@ -262,7 +262,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 							var i = _step2.value;
 
 							if (i instanceof $node) i = i.$el;
-							_tempFragment.appendChild(i);
+							tempFragment.appendChild(i);
 						}
 					} catch (err) {
 						_didIteratorError2 = true;
@@ -279,7 +279,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 						}
 					}
 
-					this.$el.parentNode.insertBefore(_tempFragment, this);
+					this.$el.parentNode.insertBefore(tempFragment, this);
 				} else {
 					error(this, 'may not have been attached to document properly.');
 				}
@@ -287,7 +287,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 			},
 			after: function after() {
 				if (this.$el.parentNode) {
-					var _tempFragment2 = document.createDocumentFragment();
+					var tempFragment = document.createDocumentFragment();
 
 					for (var _len6 = arguments.length, nodes = Array(_len6), _key6 = 0; _key6 < _len6; _key6++) {
 						nodes[_key6] = arguments[_key6];
@@ -302,7 +302,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 							var i = _step3.value;
 
 							if (i instanceof $node) i = i.$el;
-							_tempFragment2.appendChild(i);
+							tempFragment.appendChild(i);
 						}
 					} catch (err) {
 						_didIteratorError3 = true;
@@ -320,9 +320,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 					}
 
 					if (this.$el.nextSibling) {
-						this.$el.parentNode.insertBefore(_tempFragment2, this.$el.nextSibling);
+						this.$el.parentNode.insertBefore(tempFragment, this.$el.nextSibling);
 					} else {
-						this.$el.parentNode.append(_tempFragment2);
+						this.$el.parentNode.append(tempFragment);
 					}
 				} else {
 					error(this, 'may not have been attached to document properly.');
@@ -794,6 +794,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 			}
 		};
 
+		document.addEventListener('DOMContentLoaded', init, false);
+		if (document.readyState === "interactive" || document.readyState === "complete") init();
+
 		if (typeof module !== 'undefined' && module.exports) {
 			module.exports = Blyde;
 		} else if (typeof define === 'function' && define.amd) {
@@ -801,8 +804,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 				return Blyde;
 			});
 		} else {
-			document.addEventListener('DOMContentLoaded', init, false);
-			if (document.readyState === "interactive" || document.readyState === "complete") init();
 			Object.defineProperties(window, {
 				Blyde: {
 					value: Blyde
