@@ -10,6 +10,7 @@ gen/
 *~
 *.*~
 .fuse_*
+yarn.lock
 cache/
 
 # Project files
