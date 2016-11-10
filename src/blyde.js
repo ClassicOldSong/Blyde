@@ -19,11 +19,26 @@
 	const $node = class {
 		constructor(node) {
 			this.$el = node
-			node.$id = $cache.length
+			Object.defineProperty(node, '$id', {value: $cache.length})
+			let $nodeMethods = {}
+			for (let i in methods.node) {
+				$nodeMethods[i] = methods.node[i].bind(node)
+			}
+			Object.assign(this, $nodeMethods)
 			$cache.push(this)
 		}
 	}
-	const $nodeList = class extends Array {}
+	const $nodeList = class {
+		constructor(list) {
+			this.$list = []
+			for (let i = 0; i < list.length; i++) this.$list.push(list[i].$)
+			let $listMethods = {}
+			for (let i in methods.list) {
+				$listMethods[i] = methods.list[i].bind(this.$list)
+			}
+			Object.assign(this, $listMethods)
+		}
+	}
 
 	const initQuery = []
 	let loaded = false
@@ -44,42 +59,40 @@
 	const regFn = (name, fns, autoNameSpace) => {
 		for (let i in fns.node) {
 			let fnName = i
-			if (typeof(methods.node[i]) !== 'undefined') {
-				if (autoNameSpace) {
+			if (methods.node[i]) {
+				if (autoNameSpace === 'rename') {
 					fnName = name + i
 					warn(`Node property "${i}" has been set as "${name + i}".`)
 				} else {
-					warn(`Node property "${i}" in "${name}" conflicts with the original one, set "autoNameSpace" true to get this problem solved.`)
+					warn(`Node property "${i}" in "${name}" conflicts with the original one, set "autoNameSpace" true to keep both.`)
 				}
 			}
 			methods.node[fnName] = fns.node[i]
-			Object.defineProperty($node.prototype, fnName, {value: fns.node[i]})
 		}
 		for (let i in fns.list) {
 			let fnName = i
-			if (typeof(methods.list[i]) !== 'undefined') {
-				if (autoNameSpace) {
+			if (methods.list[i]) {
+				if (autoNameSpace === 'rename') {
 					fnName = name + i
 					warn(`Nodelist property "${i}" has been set as "${name + i}".`)
 				} else {
-					warn(`Nodelist property "${i}" in "${name}" conflicts with the original one, set "autoNameSpace" true to get this problem solved.`)
+					warn(`Nodelist property "${i}" in "${name}" has replaced the original one, set "autoNameSpace" true to keep both.`)
 				}
 			}
 			methods.list[fnName] = fns.list[i]
-			Object.defineProperty($nodeList.prototype, fnName, {value: fns.list[i]})
 		}
 		for (let i in fns.Blyde) {
 			let fnName = i
-			if (typeof(methods.Blyde[i]) !== 'undefined') {
-				if (autoNameSpace) {
+			if (methods.Blyde[i]) {
+				if (autoNameSpace === 'rename') {
 					fnName = name + i
 					warn(`Blyde property "${i}" has been set as "${name + i}".`)
 				} else {
-					warn(`Blyde property "${i}" in "${name}" conflicts with the original one, set "autoNameSpace" true to get this problem solved.`)
+					warn(`Blyde property "${i}" in "${name}" conflicts with the original one, set "autoNameSpace" true to keep both.`)
 				}
 			}
 			methods.Blyde[fnName] = fns.Blyde[i]
-			Object.defineProperty(Blyde, fnName, {value: fns.Blyde[i]})
+			Blyde[fnName] = fns.Blyde[i]
 		}
 	}
 
@@ -108,32 +121,32 @@
 		q(selector) {
 			let selected = selector
 			if (!(selector instanceof Node)) {
-				selected = this.$el.querySelector(selector)
+				selected = this.querySelector(selector)
 			}
 			if (typeof selected.$id !== 'undefined' && selected.$id in $cache) return $cache[selected.$id]
-			else return new $node(selected)
+			else return new $node(this)
 		},
 
 		qa(selector) {
-			if (selector instanceof NodeList) return new $nodeList(...selector)
-			return new $nodeList(...this.$el.querySelectorAll(selector))
+			if (selector instanceof NodeList) return new $nodeList(selector)
+			return new $nodeList(this.querySelectorAll(selector))
 		},
 
 		addClass(className) {
 			let classes = className.split(' ')
-			this.$el.classList.add(...classes)
-			return this
+			this.classList.add(...classes)
+			return this.$
 		},
 
 		removeClass(className) {
 			let classes = className.split(' ')
-			this.$el.classList.remove(...classes)
-			return this
+			this.classList.remove(...classes)
+			return this.$
 		},
 
 		toggleClass(className) {
 			let classes = className.split(' ')
-			let classArr = this.$el.className.split(' ')
+			let classArr = this.className.split(' ')
 			for (let i in classes) {
 				let classIndex = classArr.indexOf(classes[i])
 				if (classIndex > -1) {
@@ -142,32 +155,32 @@
 					classArr.push(classes[i])
 				}
 			}
-			this.$el.className = classArr.join(' ').trim()
-			return this
+			this.className = classArr.join(' ').trim()
+			return this.$
 		},
 
 		replaceWith(node) {
 			if (node instanceof $node) node = node.$el
-			let parent = this.$el.parentNode
+			let parent = this.parentNode
 			if (parent) {
 				parent.replaceChild(node, this)
-				return node
+				return node.$
 			} else {
 				error(this, 'may not have been attached to document properly.')
-				return this
+				return this.$
 			}
 		},
 
 		swap(node) {
 			if (node instanceof $node) node = node.$el
-			let thisParent = this.$el.parentNode
+			let thisParent = this.parentNode
 			let nodeParent = node.parentNode
-			let thisSibling = this.$el.nextSibling
+			let thisSibling = this.nextSibling
 			let nodeSibling = node.nextSibling
 			if (thisParent && nodeParent) {
 				thisParent.insertBefore(node, thisSibling)
-				nodeParent.insertBefore(this.$el, nodeSibling)
-				return node
+				nodeParent.insertBefore(this, nodeSibling)
+				return node.$
 			} else {
 				let errNodes = []
 				if (thisParent === null) {
@@ -177,45 +190,45 @@
 					errNodes.push(node)
 				}
 				error(...errNodes, 'may not have been attached to document properly.')
-				return this
+				return this.$
 			}
 		},
 
 		before(...nodes) {
-			if (this.$el.parentNode) {
+			if (this.parentNode) {
 				let tempFragment = document.createDocumentFragment()
 				nodes.reverse()
 				for (let i of nodes) {
 					if (i instanceof $node) i = i.$el
 					tempFragment.appendChild(i)
 				}
-				this.$el.parentNode.insertBefore(tempFragment, this)
+				this.parentNode.insertBefore(tempFragment, this)
 			} else {
 				error(this, 'may not have been attached to document properly.')
 			}
-			return this
+			return this.$
 		},
 
 		after(...nodes) {
-			if (this.$el.parentNode) {
+			if (this.parentNode) {
 				let tempFragment = document.createDocumentFragment()
 				for (let i of nodes) {
 					if (i instanceof $node) i = i.$el
 					tempFragment.appendChild(i)
 				}
-				if (this.$el.nextSibling) {
-					this.$el.parentNode.insertBefore(tempFragment, this.$el.nextSibling)
+				if (this.nextSibling) {
+					this.parentNode.insertBefore(tempFragment, this.nextSibling)
 				} else {
-					this.$el.parentNode.append(tempFragment)
+					this.parentNode.append(tempFragment)
 				}
 			} else {
 				error(this, 'may not have been attached to document properly.')
 			}
-			return this
+			return this.$
 		},
 
 		append(...nodes) {
-			if ([1,9,11].indexOf(this.$el.nodeType) === -1) {
+			if ([1,9,11].indexOf(this.nodeType) === -1) {
 				error('This node type does not support method "append".')
 				return
 			}
@@ -224,12 +237,12 @@
 				if (i instanceof $node) i = i.$el
 				tempFragment.appendChild(i)
 			}
-			this.$el.appendChild(tempFragment)
-			return this
+			this.appendChild(tempFragment)
+			return this.$
 		},
 
 		prepend(...nodes) {
-			if ([1,9,11].indexOf(this.$el.nodeType) === -1) {
+			if ([1,9,11].indexOf(this.nodeType) === -1) {
 				error('This node type does not support method "prepend".')
 				return
 			}
@@ -239,18 +252,18 @@
 					if (i instanceof $node) i = i.$el
 					tempFragment.appendChild(i)
 				}
-			if (this.$el.firstChild) {
-				this.$el.insertBefore(tempFragment, this.$el.firstChild)
+			if (this.firstChild) {
+				this.insertBefore(tempFragment, this.$el.firstChild)
 			} else {
-				this.$el.appendChild(tempFragment)
+				this.appendChild(tempFragment)
 			}
-			return this
+			return this.$
 		},
 
 		appendTo(node) {
 			if (node instanceof $node) node = node.$el
 			node.appendChild(this)
-			return this
+			return this.$
 		},
 
 		prependTo(node) {
@@ -260,26 +273,26 @@
 			} else {
 				node.appendChild(this)
 			}
-			return this
+			return this.$
 		},
 
 		empty() {
-			this.$el.innerHTML = ''
+			this.innerHTML = ''
 		},
 
 		remove() {
-			this.$el.parentNode.removeChild(this.$el)
-			return this
+			this.parentNode.removeChild(this)
+			return this.$
 		},
 
 		safeRemove() {
-			safeZone.appendChild(this.$el)
-			return this
+			safeZone.appendChild(this)
+			return this.$
 		},
 
 		on(type, fn, useCapture) {
 			if (typeof(fn) === 'function') {
-				this.$el.addEventListener(type, fn, !!useCapture)
+				this.addEventListener(type, fn, !!useCapture)
 			} else {
 				error(fn, 'is not a function!')
 			}
@@ -296,17 +309,15 @@
 
 	const listMethods = {
 		addClass(className) {
-			let classes = className.split(' ')
 			for (let i of this) {
-				i.classList.add(...classes)
+				i.addClass(className)
 			}
 			return this
 		},
 
 		removeClass(className) {
-			let classes = className.split(' ')
 			for (let i of this) {
-				i.classList.remove(...classes)
+				i.removeClass(className)
 			}
 			return this
 		},
@@ -315,7 +326,7 @@
 			if (node instanceof $node) node = node.$el
 			let nodes = []
 			for (let i of this) {
-				nodes.push(i)
+				nodes.push(i.$el)
 			}
 			nodeMethods.append.call(node, ...nodes)
 			return this
@@ -325,7 +336,7 @@
 			if (node instanceof $node) node = node.$el
 			let nodes = []
 			for (let i of this) {
-				nodes.push(i)
+				nodes.push(i.$el)
 			}
 			nodeMethods.prepend.call(node, ...nodes)
 			return this
@@ -333,28 +344,28 @@
 
 		toggleClass(className) {
 			for (let i of this) {
-				nodeMethods.toggleClass.call(i, className)
+				i.toggleClass(className)
 			}
 			return this
 		},
 
 		empty() {
 			for (let i of this) {
-				nodeMethods.empty.call(i)
+				i.empty()
 			}
 			return this
 		},
 
 		remove() {
 			for (let i of this) {
-				nodeMethods.remove.call(i)
+				i.remove()
 			}
 			return this
 		},
 
 		safeRemove() {
 			for (let i of this) {
-				nodeMethods.safeRemove.call(i)
+				i.safeRemove()
 			}
 			return this
 		},
@@ -362,7 +373,7 @@
 		on(type, fn, useCapture) {
 			if (typeof(fn) === 'function') {
 				for (let i of this) {
-					this[i].addEventListener(type, fn, !!useCapture)
+					this[i].on(type, fn, !!useCapture)
 				}
 			} else {
 				error(fn, 'is not a function!')
@@ -372,7 +383,7 @@
 		un(type, fn, useCapture) {
 			if (typeof(fn) === 'function') {
 				for (let i of this) {
-					this[i].removeEventListener(type, fn, !!useCapture)
+					this[i].un(type, fn, !!useCapture)
 				}
 			} else {
 				error(fn, 'is not a function!')
@@ -384,11 +395,11 @@
 		version: 'Blyde v0.1.0',
 		fn: regFn,
 		methods,
-		q: nodeMethods.q.bind(new $node(document)),
-		qa: nodeMethods.qa.bind(new $node(document)),
+		q: nodeMethods.q.bind(document),
+		qa: nodeMethods.qa.bind(document),
 		create: $create,
-		on: nodeMethods.on.bind(new $node(window)),
-		un: nodeMethods.on.bind(new $node(window)),
+		on: nodeMethods.on.bind(window),
+		un: nodeMethods.on.bind(window),
 		useVelocity
 	}
 
@@ -401,7 +412,7 @@
 	Object.defineProperty(Node.prototype, '$', {
 		get() {
 			if (this.$id && this.$id in $cache) return $cache[this.$id]
-			else return nodeMethods.q(this)
+			else return nodeMethods.q.call(this, this)
 		}
 	})
 

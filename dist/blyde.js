@@ -4,10 +4,6 @@
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 {
@@ -47,20 +43,26 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 			_classCallCheck(this, $node);
 
 			this.$el = node;
-			node.$id = $cache.length;
+			Object.defineProperty(node, '$id', { value: $cache.length });
+			var $nodeMethods = {};
+			for (var i in methods.node) {
+				$nodeMethods[i] = methods.node[i].bind(node);
+			}
+			Object.assign(this, $nodeMethods);
 			$cache.push(this);
 		};
-		var $nodeList = function (_Array) {
-			_inherits($nodeList, _Array);
+		var $nodeList = function $nodeList(list) {
+			_classCallCheck(this, $nodeList);
 
-			function $nodeList() {
-				_classCallCheck(this, $nodeList);
-
-				return _possibleConstructorReturn(this, ($nodeList.__proto__ || Object.getPrototypeOf($nodeList)).apply(this, arguments));
+			this.$list = [];
+			for (var i = 0; i < list.length; i++) {
+				this.$list.push(list[i].$);
+			}var $listMethods = {};
+			for (var _i in methods.list) {
+				$listMethods[_i] = methods.list[_i].bind(this.$list);
 			}
-
-			return $nodeList;
-		}(Array);
+			Object.assign(this, $listMethods);
+		};
 
 		var initQuery = [];
 		var loaded = false;
@@ -81,42 +83,40 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 		var regFn = function regFn(name, fns, autoNameSpace) {
 			for (var i in fns.node) {
 				var fnName = i;
-				if (typeof methods.node[i] !== 'undefined') {
-					if (autoNameSpace) {
+				if (methods.node[i]) {
+					if (autoNameSpace === 'rename') {
 						fnName = name + i;
 						warn('Node property "' + i + '" has been set as "' + (name + i) + '".');
 					} else {
-						warn('Node property "' + i + '" in "' + name + '" conflicts with the original one, set "autoNameSpace" true to get this problem solved.');
+						warn('Node property "' + i + '" in "' + name + '" conflicts with the original one, set "autoNameSpace" true to keep both.');
 					}
 				}
 				methods.node[fnName] = fns.node[i];
-				Object.defineProperty($node.prototype, fnName, { value: fns.node[i] });
 			}
-			for (var _i in fns.list) {
-				var _fnName = _i;
-				if (typeof methods.list[_i] !== 'undefined') {
-					if (autoNameSpace) {
-						_fnName = name + _i;
-						warn('Nodelist property "' + _i + '" has been set as "' + (name + _i) + '".');
+			for (var _i2 in fns.list) {
+				var _fnName = _i2;
+				if (methods.list[_i2]) {
+					if (autoNameSpace === 'rename') {
+						_fnName = name + _i2;
+						warn('Nodelist property "' + _i2 + '" has been set as "' + (name + _i2) + '".');
 					} else {
-						warn('Nodelist property "' + _i + '" in "' + name + '" conflicts with the original one, set "autoNameSpace" true to get this problem solved.');
+						warn('Nodelist property "' + _i2 + '" in "' + name + '" has replaced the original one, set "autoNameSpace" true to keep both.');
 					}
 				}
-				methods.list[_fnName] = fns.list[_i];
-				Object.defineProperty($nodeList.prototype, _fnName, { value: fns.list[_i] });
+				methods.list[_fnName] = fns.list[_i2];
 			}
-			for (var _i2 in fns.Blyde) {
-				var _fnName2 = _i2;
-				if (typeof methods.Blyde[_i2] !== 'undefined') {
-					if (autoNameSpace) {
-						_fnName2 = name + _i2;
-						warn('Blyde property "' + _i2 + '" has been set as "' + (name + _i2) + '".');
+			for (var _i3 in fns.Blyde) {
+				var _fnName2 = _i3;
+				if (methods.Blyde[_i3]) {
+					if (autoNameSpace === 'rename') {
+						_fnName2 = name + _i3;
+						warn('Blyde property "' + _i3 + '" has been set as "' + (name + _i3) + '".');
 					} else {
-						warn('Blyde property "' + _i2 + '" in "' + name + '" conflicts with the original one, set "autoNameSpace" true to get this problem solved.');
+						warn('Blyde property "' + _i3 + '" in "' + name + '" conflicts with the original one, set "autoNameSpace" true to keep both.');
 					}
 				}
-				methods.Blyde[_fnName2] = fns.Blyde[_i2];
-				Object.defineProperty(Blyde, _fnName2, { value: fns.Blyde[_i2] });
+				methods.Blyde[_fnName2] = fns.Blyde[_i3];
+				Blyde[_fnName2] = fns.Blyde[_i3];
 			}
 		};
 
@@ -175,31 +175,31 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 			q: function q(selector) {
 				var selected = selector;
 				if (!(selector instanceof Node)) {
-					selected = this.$el.querySelector(selector);
+					selected = this.querySelector(selector);
 				}
-				if (typeof selected.$id !== 'undefined' && selected.$id in $cache) return $cache[selected.$id];else return new $node(selected);
+				if (typeof selected.$id !== 'undefined' && selected.$id in $cache) return $cache[selected.$id];else return new $node(this);
 			},
 			qa: function qa(selector) {
-				if (selector instanceof NodeList) return new (Function.prototype.bind.apply($nodeList, [null].concat(_toConsumableArray(selector))))();
-				return new (Function.prototype.bind.apply($nodeList, [null].concat(_toConsumableArray(this.$el.querySelectorAll(selector)))))();
+				if (selector instanceof NodeList) return new $nodeList(selector);
+				return new $nodeList(this.querySelectorAll(selector));
 			},
 			addClass: function addClass(className) {
-				var _$el$classList;
+				var _classList;
 
 				var classes = className.split(' ');
-				(_$el$classList = this.$el.classList).add.apply(_$el$classList, _toConsumableArray(classes));
-				return this;
+				(_classList = this.classList).add.apply(_classList, _toConsumableArray(classes));
+				return this.$;
 			},
 			removeClass: function removeClass(className) {
-				var _$el$classList2;
+				var _classList2;
 
 				var classes = className.split(' ');
-				(_$el$classList2 = this.$el.classList).remove.apply(_$el$classList2, _toConsumableArray(classes));
-				return this;
+				(_classList2 = this.classList).remove.apply(_classList2, _toConsumableArray(classes));
+				return this.$;
 			},
 			toggleClass: function toggleClass(className) {
 				var classes = className.split(' ');
-				var classArr = this.$el.className.split(' ');
+				var classArr = this.className.split(' ');
 				for (var i in classes) {
 					var classIndex = classArr.indexOf(classes[i]);
 					if (classIndex > -1) {
@@ -208,30 +208,30 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 						classArr.push(classes[i]);
 					}
 				}
-				this.$el.className = classArr.join(' ').trim();
-				return this;
+				this.className = classArr.join(' ').trim();
+				return this.$;
 			},
 			replaceWith: function replaceWith(node) {
 				if (node instanceof $node) node = node.$el;
-				var parent = this.$el.parentNode;
+				var parent = this.parentNode;
 				if (parent) {
 					parent.replaceChild(node, this);
-					return node;
+					return node.$;
 				} else {
 					error(this, 'may not have been attached to document properly.');
-					return this;
+					return this.$;
 				}
 			},
 			swap: function swap(node) {
 				if (node instanceof $node) node = node.$el;
-				var thisParent = this.$el.parentNode;
+				var thisParent = this.parentNode;
 				var nodeParent = node.parentNode;
-				var thisSibling = this.$el.nextSibling;
+				var thisSibling = this.nextSibling;
 				var nodeSibling = node.nextSibling;
 				if (thisParent && nodeParent) {
 					thisParent.insertBefore(node, thisSibling);
-					nodeParent.insertBefore(this.$el, nodeSibling);
-					return node;
+					nodeParent.insertBefore(this, nodeSibling);
+					return node.$;
 				} else {
 					var errNodes = [];
 					if (thisParent === null) {
@@ -241,11 +241,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 						errNodes.push(node);
 					}
 					error.apply(undefined, errNodes.concat(['may not have been attached to document properly.']));
-					return this;
+					return this.$;
 				}
 			},
 			before: function before() {
-				if (this.$el.parentNode) {
+				if (this.parentNode) {
 					var tempFragment = document.createDocumentFragment();
 
 					for (var _len5 = arguments.length, nodes = Array(_len5), _key5 = 0; _key5 < _len5; _key5++) {
@@ -279,14 +279,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 						}
 					}
 
-					this.$el.parentNode.insertBefore(tempFragment, this);
+					this.parentNode.insertBefore(tempFragment, this);
 				} else {
 					error(this, 'may not have been attached to document properly.');
 				}
-				return this;
+				return this.$;
 			},
 			after: function after() {
-				if (this.$el.parentNode) {
+				if (this.parentNode) {
 					var tempFragment = document.createDocumentFragment();
 
 					for (var _len6 = arguments.length, nodes = Array(_len6), _key6 = 0; _key6 < _len6; _key6++) {
@@ -319,18 +319,18 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 						}
 					}
 
-					if (this.$el.nextSibling) {
-						this.$el.parentNode.insertBefore(tempFragment, this.$el.nextSibling);
+					if (this.nextSibling) {
+						this.parentNode.insertBefore(tempFragment, this.nextSibling);
 					} else {
-						this.$el.parentNode.append(tempFragment);
+						this.parentNode.append(tempFragment);
 					}
 				} else {
 					error(this, 'may not have been attached to document properly.');
 				}
-				return this;
+				return this.$;
 			},
 			append: function append() {
-				if ([1, 9, 11].indexOf(this.$el.nodeType) === -1) {
+				if ([1, 9, 11].indexOf(this.nodeType) === -1) {
 					error('This node type does not support method "append".');
 					return;
 				}
@@ -366,11 +366,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 					}
 				}
 
-				this.$el.appendChild(tempFragment);
-				return this;
+				this.appendChild(tempFragment);
+				return this.$;
 			},
 			prepend: function prepend() {
-				if ([1, 9, 11].indexOf(this.$el.nodeType) === -1) {
+				if ([1, 9, 11].indexOf(this.nodeType) === -1) {
 					error('This node type does not support method "prepend".');
 					return;
 				}
@@ -407,17 +407,17 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 					}
 				}
 
-				if (this.$el.firstChild) {
-					this.$el.insertBefore(tempFragment, this.$el.firstChild);
+				if (this.firstChild) {
+					this.insertBefore(tempFragment, this.$el.firstChild);
 				} else {
-					this.$el.appendChild(tempFragment);
+					this.appendChild(tempFragment);
 				}
-				return this;
+				return this.$;
 			},
 			appendTo: function appendTo(node) {
 				if (node instanceof $node) node = node.$el;
 				node.appendChild(this);
-				return this;
+				return this.$;
 			},
 			prependTo: function prependTo(node) {
 				if (node instanceof $node) node = node.$el;
@@ -426,22 +426,22 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 				} else {
 					node.appendChild(this);
 				}
-				return this;
+				return this.$;
 			},
 			empty: function empty() {
-				this.$el.innerHTML = '';
+				this.innerHTML = '';
 			},
 			remove: function remove() {
-				this.$el.parentNode.removeChild(this.$el);
-				return this;
+				this.parentNode.removeChild(this);
+				return this.$;
 			},
 			safeRemove: function safeRemove() {
-				safeZone.appendChild(this.$el);
-				return this;
+				safeZone.appendChild(this);
+				return this.$;
 			},
 			on: function on(type, fn, useCapture) {
 				if (typeof fn === 'function') {
-					this.$el.addEventListener(type, fn, !!useCapture);
+					this.addEventListener(type, fn, !!useCapture);
 				} else {
 					error(fn, 'is not a function!');
 				}
@@ -457,18 +457,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 		var listMethods = {
 			addClass: function addClass(className) {
-				var classes = className.split(' ');
 				var _iteratorNormalCompletion6 = true;
 				var _didIteratorError6 = false;
 				var _iteratorError6 = undefined;
 
 				try {
 					for (var _iterator6 = this[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
-						var _i$classList;
-
 						var i = _step6.value;
 
-						(_i$classList = i.classList).add.apply(_i$classList, _toConsumableArray(classes));
+						i.addClass(className);
 					}
 				} catch (err) {
 					_didIteratorError6 = true;
@@ -488,18 +485,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 				return this;
 			},
 			removeClass: function removeClass(className) {
-				var classes = className.split(' ');
 				var _iteratorNormalCompletion7 = true;
 				var _didIteratorError7 = false;
 				var _iteratorError7 = undefined;
 
 				try {
 					for (var _iterator7 = this[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
-						var _i$classList2;
-
 						var i = _step7.value;
 
-						(_i$classList2 = i.classList).remove.apply(_i$classList2, _toConsumableArray(classes));
+						i.removeClass(className);
 					}
 				} catch (err) {
 					_didIteratorError7 = true;
@@ -531,7 +525,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 					for (var _iterator8 = this[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
 						var i = _step8.value;
 
-						nodes.push(i);
+						nodes.push(i.$el);
 					}
 				} catch (err) {
 					_didIteratorError8 = true;
@@ -564,7 +558,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 					for (var _iterator9 = this[Symbol.iterator](), _step9; !(_iteratorNormalCompletion9 = (_step9 = _iterator9.next()).done); _iteratorNormalCompletion9 = true) {
 						var i = _step9.value;
 
-						nodes.push(i);
+						nodes.push(i.$el);
 					}
 				} catch (err) {
 					_didIteratorError9 = true;
@@ -593,7 +587,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 					for (var _iterator10 = this[Symbol.iterator](), _step10; !(_iteratorNormalCompletion10 = (_step10 = _iterator10.next()).done); _iteratorNormalCompletion10 = true) {
 						var i = _step10.value;
 
-						nodeMethods.toggleClass.call(i, className);
+						i.toggleClass(className);
 					}
 				} catch (err) {
 					_didIteratorError10 = true;
@@ -621,7 +615,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 					for (var _iterator11 = this[Symbol.iterator](), _step11; !(_iteratorNormalCompletion11 = (_step11 = _iterator11.next()).done); _iteratorNormalCompletion11 = true) {
 						var i = _step11.value;
 
-						nodeMethods.empty.call(i);
+						i.empty();
 					}
 				} catch (err) {
 					_didIteratorError11 = true;
@@ -649,7 +643,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 					for (var _iterator12 = this[Symbol.iterator](), _step12; !(_iteratorNormalCompletion12 = (_step12 = _iterator12.next()).done); _iteratorNormalCompletion12 = true) {
 						var i = _step12.value;
 
-						nodeMethods.remove.call(i);
+						i.remove();
 					}
 				} catch (err) {
 					_didIteratorError12 = true;
@@ -677,7 +671,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 					for (var _iterator13 = this[Symbol.iterator](), _step13; !(_iteratorNormalCompletion13 = (_step13 = _iterator13.next()).done); _iteratorNormalCompletion13 = true) {
 						var i = _step13.value;
 
-						nodeMethods.safeRemove.call(i);
+						i.safeRemove();
 					}
 				} catch (err) {
 					_didIteratorError13 = true;
@@ -706,7 +700,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 						for (var _iterator14 = this[Symbol.iterator](), _step14; !(_iteratorNormalCompletion14 = (_step14 = _iterator14.next()).done); _iteratorNormalCompletion14 = true) {
 							var i = _step14.value;
 
-							this[i].addEventListener(type, fn, !!useCapture);
+							this[i].on(type, fn, !!useCapture);
 						}
 					} catch (err) {
 						_didIteratorError14 = true;
@@ -736,7 +730,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 						for (var _iterator15 = this[Symbol.iterator](), _step15; !(_iteratorNormalCompletion15 = (_step15 = _iterator15.next()).done); _iteratorNormalCompletion15 = true) {
 							var i = _step15.value;
 
-							this[i].removeEventListener(type, fn, !!useCapture);
+							this[i].un(type, fn, !!useCapture);
 						}
 					} catch (err) {
 						_didIteratorError15 = true;
@@ -762,11 +756,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 			version: 'Blyde v0.1.0',
 			fn: regFn,
 			methods: methods,
-			q: nodeMethods.q.bind(new $node(document)),
-			qa: nodeMethods.qa.bind(new $node(document)),
+			q: nodeMethods.q.bind(document),
+			qa: nodeMethods.qa.bind(document),
 			create: $create,
-			on: nodeMethods.on.bind(new $node(window)),
-			un: nodeMethods.on.bind(new $node(window)),
+			on: nodeMethods.on.bind(window),
+			un: nodeMethods.on.bind(window),
 			useVelocity: useVelocity
 		};
 
@@ -778,7 +772,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 		Object.defineProperty(Node.prototype, '$', {
 			get: function get() {
-				if (this.$id && this.$id in $cache) return $cache[this.$id];else return nodeMethods.q(this);
+				if (this.$id && this.$id in $cache) return $cache[this.$id];else return nodeMethods.q.call(this, this);
 			}
 		});
 
