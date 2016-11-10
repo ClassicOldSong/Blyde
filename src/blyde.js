@@ -304,6 +304,14 @@
 				error(fn, 'is not a function!')
 			}
 		},
+
+		animate(name) {
+			this.$.addClass(`${name}-trans`)
+			setTimeout(() => {
+				this.$.addClass(`${name}-start`)
+				this.$.addClass(`${name}-end`)
+			}, 0)
+		}
 	}
 
 	const listMethods = {
