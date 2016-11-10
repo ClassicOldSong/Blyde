@@ -119,12 +119,11 @@
 
 	const nodeMethods = {
 		q(selector) {
-			let selected = selector
 			if (!(selector instanceof Node)) {
-				selected = this.querySelector(selector)
+				selector = this.querySelector(selector)
 			}
-			if (typeof selected.$id !== 'undefined' && selected.$id in $cache) return $cache[selected.$id]
-			else return new $node(this)
+			if (typeof selector.$id !== 'undefined' && selector.$id in $cache) return $cache[selector.$id]
+			else return new $node(selector)
 		},
 
 		qa(selector) {
