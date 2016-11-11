@@ -117,7 +117,7 @@ const useVelocity = (v) => {
 		list: {
 			velocity(...args) {
 				for (let i of this.$list) {
-					v(i, ...args)
+					v(i.$el, ...args)
 				}
 				return this
 			}
