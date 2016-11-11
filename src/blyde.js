@@ -39,12 +39,11 @@ const $node = class {
 }
 const $nodeList = class {
 	constructor(list) {
-		let $list = []
-		for (let i = 0; i < list.length; i++) $list.push(list[i].$)
-		this.$list = $list
+		this.$list = []
+		for (let i = 0; i < list.length; i++) this.$list.push(list[i].$)
 		let $listMethods = {}
 		for (let i in methods.list) {
-			$listMethods[i] = methods.list[i].bind($list)
+			$listMethods[i] = methods.list[i].bind(this.$list)
 		}
 		Object.assign(this, $listMethods)
 	}
@@ -326,25 +325,25 @@ const nodeMethods = {
 
 const listMethods = {
 	addClass(className) {
-		for (let i of this) {
+		this.forEach((i) => {
 			i.addClass(className)
-		}
+		})
 		return this
 	},
 
 	removeClass(className) {
-		for (let i of this) {
+		this.forEach((i) => {
 			i.removeClass(className)
-		}
+		})
 		return this
 	},
 
 	appendTo(node) {
 		if (node instanceof $node) node = node.$el
 		let nodes = []
-		for (let i of this) {
+		this.forEach((i) => {
 			nodes.push(i.$el)
-		}
+		})
 		nodeMethods.append.call(node, ...nodes)
 		return this
 	},
@@ -352,46 +351,46 @@ const listMethods = {
 	prependTo(node) {
 		if (node instanceof $node) node = node.$el
 		let nodes = []
-		for (let i of this) {
+		this.forEach((i) => {
 			nodes.push(i.$el)
-		}
+		})
 		nodeMethods.prepend.call(node, ...nodes)
 		return this
 	},
 
 	toggleClass(className) {
-		for (let i of this) {
+		this.forEach((i) => {
 			i.toggleClass(className)
-		}
+		})
 		return this
 	},
 
 	empty() {
-		for (let i of this) {
+		this.forEach((i) => {
 			i.empty()
-		}
+		})
 		return this
 	},
 
 	remove() {
-		for (let i of this) {
+		this.forEach((i) => {
 			i.remove()
-		}
+		})
 		return this
 	},
 
 	safeRemove() {
-		for (let i of this) {
+		this.forEach((i) => {
 			i.safeRemove()
-		}
+		})
 		return this
 	},
 
 	on(type, fn, useCapture) {
 		if (typeof(fn) === 'function') {
-			for (let i of this) {
-				this[i].on(type, fn, !!useCapture)
-			}
+			this.forEach((i) => {
+				i.on(type, fn, !!useCapture)
+			})
 		} else {
 			log(fn, 'is not a function!')
 		}
@@ -399,9 +398,9 @@ const listMethods = {
 
 	un(type, fn, useCapture) {
 		if (typeof(fn) === 'function') {
-			for (let i of this) {
-				this[i].un(type, fn, !!useCapture)
-			}
+			this.forEach((i) => {
+				i.un(type, fn, !!useCapture)
+			})
 		} else {
 			log(fn, 'is not a function!')
 		}

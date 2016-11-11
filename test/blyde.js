@@ -1364,6 +1364,242 @@ function localstorage(){
 }
 });
 
+/*
+ * classList.js: Cross-browser full element.classList implementation.
+ * 2014-07-23
+ *
+ * By Eli Grey, http://eligrey.com
+ * Public Domain.
+ * NO WARRANTY EXPRESSED OR IMPLIED. USE AT YOUR OWN RISK.
+ */
+
+/*global self, document, DOMException */
+
+/*! @source http://purl.eligrey.com/github/classList.js/blob/master/classList.js*/
+
+/* Copied from MDN:
+ * https://developer.mozilla.org/en-US/docs/Web/API/Element/classList
+ */
+
+if ("document" in window.self) {
+
+  // Full polyfill for browsers with no classList support
+  // Including IE < Edge missing SVGElement.classList
+  if (!("classList" in document.createElement("_"))
+    || document.createElementNS && !("classList" in document.createElementNS("http://www.w3.org/2000/svg","g"))) {
+
+  (function (view) {
+
+    "use strict";
+
+    if (!('Element' in view)) return;
+
+    var
+        classListProp = "classList"
+      , protoProp = "prototype"
+      , elemCtrProto = view.Element[protoProp]
+      , objCtr = Object
+      , strTrim = String[protoProp].trim || function () {
+        return this.replace(/^\s+|\s+$/g, "");
+      }
+      , arrIndexOf = Array[protoProp].indexOf || function (item) {
+        var
+            i = 0
+          , len = this.length;
+        for (; i < len; i++) {
+          if (i in this && this[i] === item) {
+            return i;
+          }
+        }
+        return -1;
+      }
+      // Vendors: please allow content code to instantiate DOMExceptions
+      , DOMEx = function (type, message) {
+        this.name = type;
+        this.code = DOMException[type];
+        this.message = message;
+      }
+      , checkTokenAndGetIndex = function (classList, token) {
+        if (token === "") {
+          throw new DOMEx(
+              "SYNTAX_ERR"
+            , "An invalid or illegal string was specified"
+          );
+        }
+        if (/\s/.test(token)) {
+          throw new DOMEx(
+              "INVALID_CHARACTER_ERR"
+            , "String contains an invalid character"
+          );
+        }
+        return arrIndexOf.call(classList, token);
+      }
+      , ClassList = function (elem) {
+        var
+            trimmedClasses = strTrim.call(elem.getAttribute("class") || "")
+          , classes = trimmedClasses ? trimmedClasses.split(/\s+/) : []
+          , i = 0
+          , len = classes.length;
+        for (; i < len; i++) {
+          this.push(classes[i]);
+        }
+        this._updateClassName = function () {
+          elem.setAttribute("class", this.toString());
+        };
+      }
+      , classListProto = ClassList[protoProp] = []
+      , classListGetter = function () {
+        return new ClassList(this);
+      };
+    // Most DOMException implementations don't allow calling DOMException's toString()
+    // on non-DOMExceptions. Error's toString() is sufficient here.
+    DOMEx[protoProp] = Error[protoProp];
+    classListProto.item = function (i) {
+      return this[i] || null;
+    };
+    classListProto.contains = function (token) {
+      token += "";
+      return checkTokenAndGetIndex(this, token) !== -1;
+    };
+    classListProto.add = function () {
+      var
+          tokens = arguments
+        , i = 0
+        , l = tokens.length
+        , token
+        , updated = false;
+      do {
+        token = tokens[i] + "";
+        if (checkTokenAndGetIndex(this, token) === -1) {
+          this.push(token);
+          updated = true;
+        }
+      }
+      while (++i < l);
+
+      if (updated) {
+        this._updateClassName();
+      }
+    };
+    classListProto.remove = function () {
+      var
+          tokens = arguments
+        , i = 0
+        , l = tokens.length
+        , token
+        , updated = false
+        , index;
+      do {
+        token = tokens[i] + "";
+        index = checkTokenAndGetIndex(this, token);
+        while (index !== -1) {
+          this.splice(index, 1);
+          updated = true;
+          index = checkTokenAndGetIndex(this, token);
+        }
+      }
+      while (++i < l);
+
+      if (updated) {
+        this._updateClassName();
+      }
+    };
+    classListProto.toggle = function (token, force) {
+      token += "";
+
+      var
+          result = this.contains(token)
+        , method = result ?
+          force !== true && "remove"
+        :
+          force !== false && "add";
+
+      if (method) {
+        this[method](token);
+      }
+
+      if (force === true || force === false) {
+        return force;
+      } else {
+        return !result;
+      }
+    };
+    classListProto.toString = function () {
+      return this.join(" ");
+    };
+
+    if (objCtr.defineProperty) {
+      var classListPropDesc = {
+          get: classListGetter
+        , enumerable: true
+        , configurable: true
+      };
+      try {
+        objCtr.defineProperty(elemCtrProto, classListProp, classListPropDesc);
+      } catch (ex) { // IE 8 doesn't support enumerable:true
+        if (ex.number === -0x7FF5EC54) {
+          classListPropDesc.enumerable = false;
+          objCtr.defineProperty(elemCtrProto, classListProp, classListPropDesc);
+        }
+      }
+    } else if (objCtr[protoProp].__defineGetter__) {
+      elemCtrProto.__defineGetter__(classListProp, classListGetter);
+    }
+
+    }(window.self));
+
+    } else {
+    // There is full or partial native classList support, so just check if we need
+    // to normalize the add/remove and toggle APIs.
+
+    (function () {
+      "use strict";
+
+      var testElement = document.createElement("_");
+
+      testElement.classList.add("c1", "c2");
+
+      // Polyfill for IE 10/11 and Firefox <26, where classList.add and
+      // classList.remove exist but support only one argument at a time.
+      if (!testElement.classList.contains("c2")) {
+        var createMethod = function(method) {
+          var original = DOMTokenList.prototype[method];
+
+          DOMTokenList.prototype[method] = function(token) {
+            var i, len = arguments.length;
+
+            for (i = 0; i < len; i++) {
+              token = arguments[i];
+              original.call(this, token);
+            }
+          };
+        };
+        createMethod('add');
+        createMethod('remove');
+      }
+
+      testElement.classList.toggle("c3", false);
+
+      // Polyfill for IE 10 and Firefox <24, where classList.toggle does not
+      // support the second argument.
+      if (testElement.classList.contains("c3")) {
+        var _toggle = DOMTokenList.prototype.toggle;
+
+        DOMTokenList.prototype.toggle = function(token, force) {
+          if (1 in arguments && !this.contains(token) === !force) {
+            return force;
+          } else {
+            return _toggle.call(this, token);
+          }
+        };
+
+      }
+
+      testElement = null;
+    }());
+  }
+}
+
 var log$$1 = browser$1('[Blyde]');
 
 {
@@ -1398,12 +1634,13 @@ var $node = function $node(node) {
 var $nodeList = function $nodeList(list) {
 	_classCallCheck(this, $nodeList);
 
-	this.$list = [];
+	var $list = [];
 	for (var i = 0; i < list.length; i++) {
-		this.$list.push(list[i].$);
-	}var $listMethods = {};
+		$list.push(list[i].$);
+	}this.$list = $list;
+	var $listMethods = {};
 	for (var _i in methods.list) {
-		$listMethods[_i] = methods.list[_i].bind(this.$list);
+		$listMethods[_i] = methods.list[_i].bind($list);
 	}
 	_Object$assign(this, $listMethods);
 };
@@ -1474,7 +1711,7 @@ var useVelocity = function useVelocity(v) {
 				}
 
 				v.apply(undefined, [this].concat(args));
-				return this;
+				return this.$;
 			}
 		},
 		list: {
@@ -1491,7 +1728,7 @@ var useVelocity = function useVelocity(v) {
 					for (var _iterator = _getIterator(this), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
 						var i = _step.value;
 
-						v.apply(undefined, [i].concat(args));
+						v.apply(undefined, [i.$el].concat(args));
 					}
 				} catch (err) {
 					_didIteratorError = true;
@@ -1809,59 +2046,15 @@ var nodeMethods = {
 
 var listMethods = {
 	addClass: function addClass(className) {
-		var _iteratorNormalCompletion6 = true;
-		var _didIteratorError6 = false;
-		var _iteratorError6 = undefined;
-
-		try {
-			for (var _iterator6 = _getIterator(this), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
-				var i = _step6.value;
-
-				i.addClass(className);
-			}
-		} catch (err) {
-			_didIteratorError6 = true;
-			_iteratorError6 = err;
-		} finally {
-			try {
-				if (!_iteratorNormalCompletion6 && _iterator6.return) {
-					_iterator6.return();
-				}
-			} finally {
-				if (_didIteratorError6) {
-					throw _iteratorError6;
-				}
-			}
-		}
-
+		this.forEach(function (i) {
+			i.addClass(className);
+		});
 		return this;
 	},
 	removeClass: function removeClass(className) {
-		var _iteratorNormalCompletion7 = true;
-		var _didIteratorError7 = false;
-		var _iteratorError7 = undefined;
-
-		try {
-			for (var _iterator7 = _getIterator(this), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
-				var i = _step7.value;
-
-				i.removeClass(className);
-			}
-		} catch (err) {
-			_didIteratorError7 = true;
-			_iteratorError7 = err;
-		} finally {
-			try {
-				if (!_iteratorNormalCompletion7 && _iterator7.return) {
-					_iterator7.return();
-				}
-			} finally {
-				if (_didIteratorError7) {
-					throw _iteratorError7;
-				}
-			}
-		}
-
+		this.forEach(function (i) {
+			i.removeClass(className);
+		});
 		return this;
 	},
 	appendTo: function appendTo(node) {
@@ -1869,31 +2062,9 @@ var listMethods = {
 
 		if (node instanceof $node) node = node.$el;
 		var nodes = [];
-		var _iteratorNormalCompletion8 = true;
-		var _didIteratorError8 = false;
-		var _iteratorError8 = undefined;
-
-		try {
-			for (var _iterator8 = _getIterator(this), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
-				var i = _step8.value;
-
-				nodes.push(i.$el);
-			}
-		} catch (err) {
-			_didIteratorError8 = true;
-			_iteratorError8 = err;
-		} finally {
-			try {
-				if (!_iteratorNormalCompletion8 && _iterator8.return) {
-					_iterator8.return();
-				}
-			} finally {
-				if (_didIteratorError8) {
-					throw _iteratorError8;
-				}
-			}
-		}
-
+		this.forEach(function (i) {
+			nodes.push(i.$el);
+		});
 		(_nodeMethods$append = nodeMethods.append).call.apply(_nodeMethods$append, [node].concat(nodes));
 		return this;
 	},
@@ -1902,202 +2073,50 @@ var listMethods = {
 
 		if (node instanceof $node) node = node.$el;
 		var nodes = [];
-		var _iteratorNormalCompletion9 = true;
-		var _didIteratorError9 = false;
-		var _iteratorError9 = undefined;
-
-		try {
-			for (var _iterator9 = _getIterator(this), _step9; !(_iteratorNormalCompletion9 = (_step9 = _iterator9.next()).done); _iteratorNormalCompletion9 = true) {
-				var i = _step9.value;
-
-				nodes.push(i.$el);
-			}
-		} catch (err) {
-			_didIteratorError9 = true;
-			_iteratorError9 = err;
-		} finally {
-			try {
-				if (!_iteratorNormalCompletion9 && _iterator9.return) {
-					_iterator9.return();
-				}
-			} finally {
-				if (_didIteratorError9) {
-					throw _iteratorError9;
-				}
-			}
-		}
-
+		this.forEach(function (i) {
+			nodes.push(i.$el);
+		});
 		(_nodeMethods$prepend = nodeMethods.prepend).call.apply(_nodeMethods$prepend, [node].concat(nodes));
 		return this;
 	},
 	toggleClass: function toggleClass(className) {
-		var _iteratorNormalCompletion10 = true;
-		var _didIteratorError10 = false;
-		var _iteratorError10 = undefined;
-
-		try {
-			for (var _iterator10 = _getIterator(this), _step10; !(_iteratorNormalCompletion10 = (_step10 = _iterator10.next()).done); _iteratorNormalCompletion10 = true) {
-				var i = _step10.value;
-
-				i.toggleClass(className);
-			}
-		} catch (err) {
-			_didIteratorError10 = true;
-			_iteratorError10 = err;
-		} finally {
-			try {
-				if (!_iteratorNormalCompletion10 && _iterator10.return) {
-					_iterator10.return();
-				}
-			} finally {
-				if (_didIteratorError10) {
-					throw _iteratorError10;
-				}
-			}
-		}
-
+		this.forEach(function (i) {
+			i.toggleClass(className);
+		});
 		return this;
 	},
 	empty: function empty() {
-		var _iteratorNormalCompletion11 = true;
-		var _didIteratorError11 = false;
-		var _iteratorError11 = undefined;
-
-		try {
-			for (var _iterator11 = _getIterator(this), _step11; !(_iteratorNormalCompletion11 = (_step11 = _iterator11.next()).done); _iteratorNormalCompletion11 = true) {
-				var i = _step11.value;
-
-				i.empty();
-			}
-		} catch (err) {
-			_didIteratorError11 = true;
-			_iteratorError11 = err;
-		} finally {
-			try {
-				if (!_iteratorNormalCompletion11 && _iterator11.return) {
-					_iterator11.return();
-				}
-			} finally {
-				if (_didIteratorError11) {
-					throw _iteratorError11;
-				}
-			}
-		}
-
+		this.forEach(function (i) {
+			i.empty();
+		});
 		return this;
 	},
 	remove: function remove() {
-		var _iteratorNormalCompletion12 = true;
-		var _didIteratorError12 = false;
-		var _iteratorError12 = undefined;
-
-		try {
-			for (var _iterator12 = _getIterator(this), _step12; !(_iteratorNormalCompletion12 = (_step12 = _iterator12.next()).done); _iteratorNormalCompletion12 = true) {
-				var i = _step12.value;
-
-				i.remove();
-			}
-		} catch (err) {
-			_didIteratorError12 = true;
-			_iteratorError12 = err;
-		} finally {
-			try {
-				if (!_iteratorNormalCompletion12 && _iterator12.return) {
-					_iterator12.return();
-				}
-			} finally {
-				if (_didIteratorError12) {
-					throw _iteratorError12;
-				}
-			}
-		}
-
+		this.forEach(function (i) {
+			i.remove();
+		});
 		return this;
 	},
 	safeRemove: function safeRemove() {
-		var _iteratorNormalCompletion13 = true;
-		var _didIteratorError13 = false;
-		var _iteratorError13 = undefined;
-
-		try {
-			for (var _iterator13 = _getIterator(this), _step13; !(_iteratorNormalCompletion13 = (_step13 = _iterator13.next()).done); _iteratorNormalCompletion13 = true) {
-				var i = _step13.value;
-
-				i.safeRemove();
-			}
-		} catch (err) {
-			_didIteratorError13 = true;
-			_iteratorError13 = err;
-		} finally {
-			try {
-				if (!_iteratorNormalCompletion13 && _iterator13.return) {
-					_iterator13.return();
-				}
-			} finally {
-				if (_didIteratorError13) {
-					throw _iteratorError13;
-				}
-			}
-		}
-
+		this.forEach(function (i) {
+			i.safeRemove();
+		});
 		return this;
 	},
 	on: function on(type, fn, useCapture) {
 		if (typeof fn === 'function') {
-			var _iteratorNormalCompletion14 = true;
-			var _didIteratorError14 = false;
-			var _iteratorError14 = undefined;
-
-			try {
-				for (var _iterator14 = _getIterator(this), _step14; !(_iteratorNormalCompletion14 = (_step14 = _iterator14.next()).done); _iteratorNormalCompletion14 = true) {
-					var i = _step14.value;
-
-					this[i].on(type, fn, !!useCapture);
-				}
-			} catch (err) {
-				_didIteratorError14 = true;
-				_iteratorError14 = err;
-			} finally {
-				try {
-					if (!_iteratorNormalCompletion14 && _iterator14.return) {
-						_iterator14.return();
-					}
-				} finally {
-					if (_didIteratorError14) {
-						throw _iteratorError14;
-					}
-				}
-			}
+			this.forEach(function (i) {
+				i.on(type, fn, !!useCapture);
+			});
 		} else {
 			log$$1(fn, 'is not a function!');
 		}
 	},
 	un: function un(type, fn, useCapture) {
 		if (typeof fn === 'function') {
-			var _iteratorNormalCompletion15 = true;
-			var _didIteratorError15 = false;
-			var _iteratorError15 = undefined;
-
-			try {
-				for (var _iterator15 = _getIterator(this), _step15; !(_iteratorNormalCompletion15 = (_step15 = _iterator15.next()).done); _iteratorNormalCompletion15 = true) {
-					var i = _step15.value;
-
-					this[i].un(type, fn, !!useCapture);
-				}
-			} catch (err) {
-				_didIteratorError15 = true;
-				_iteratorError15 = err;
-			} finally {
-				try {
-					if (!_iteratorNormalCompletion15 && _iterator15.return) {
-						_iterator15.return();
-					}
-				} finally {
-					if (_didIteratorError15) {
-						throw _iteratorError15;
-					}
-				}
-			}
+			this.forEach(function (i) {
+				i.un(type, fn, !!useCapture);
+			});
 		} else {
 			log$$1(fn, 'is not a function!');
 		}
