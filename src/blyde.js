@@ -12,6 +12,9 @@ else {
 	log('Logging is enabled!')
 }
 
+// Polyfills
+import 'classlist-polyfill'
+
 const $create = tag => document.createElement(tag)
 
 const $cache = []

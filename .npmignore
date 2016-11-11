@@ -15,6 +15,7 @@ cache/
 
 # Project files
 plugins/
+test/
 
 # node modules
 node_modules/
