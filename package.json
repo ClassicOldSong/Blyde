@@ -2,7 +2,7 @@
   "name": "blyde",
   "version": "0.1.0-alpha.5",
   "description": "A blade-sharp javascript library that provides serval simple jQuery like operations",
-  "main": "dist/blyde.js",
+  "main": "dist/blyde.min.js",
   "scripts": {
     "dev": "node ./build/dev-server.js",
     "build": "node ./build/build.js",
