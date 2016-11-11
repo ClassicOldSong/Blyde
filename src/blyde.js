@@ -12,9 +12,6 @@ else {
 	log('Logging is enabled!')
 }
 
-// Polyfills
-import 'classlist-polyfill'
-
 const $create = tag => document.createElement(tag)
 
 const $cache = []
@@ -111,12 +108,12 @@ const useVelocity = (v) => {
 		node: {
 			velocity(...args) {
 				v(this, ...args)
-				return this
+				return this.$
 			}
 		},
 		list: {
 			velocity(...args) {
-				for (let i of this) {
+				for (let i of this.$list) {
 					v(i, ...args)
 				}
 				return this
