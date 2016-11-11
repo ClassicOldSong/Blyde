@@ -39,11 +39,12 @@ const $node = class {
 }
 const $nodeList = class {
 	constructor(list) {
-		this.$list = []
-		for (let i = 0; i < list.length; i++) this.$list.push(list[i].$)
+		let $list = []
+		for (let i = 0; i < list.length; i++) $list.push(list[i].$)
+		this.$list = $list
 		let $listMethods = {}
 		for (let i in methods.list) {
-			$listMethods[i] = methods.list[i].bind(this.$list)
+			$listMethods[i] = methods.list[i].bind($list)
 		}
 		Object.assign(this, $listMethods)
 	}
@@ -116,7 +117,7 @@ const useVelocity = (v) => {
 		},
 		list: {
 			velocity(...args) {
-				for (let i of this.$list) {
+				for (let i of this) {
 					v(i.$el, ...args)
 				}
 				return this
