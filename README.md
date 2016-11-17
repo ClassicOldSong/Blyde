@@ -8,7 +8,7 @@ A blade-sharp javascript library that provides serval simple jQuery like operati
 + `node.$id`: The special id for this node if wrapped by Blyde already (DO NOT MODIFY!!)
 + `Blyde(function)`: Execute the function when document is ready
 + `Blyde.version`: Blyde v0.1.0-alpha.12
-+ `Blyde.fn('name', {node:{node methods}, list:{nodelist methods}}, autonamespace)`: Register a plugin for Blyde (Set autonamespace true to solve conflicts, otherwise the original methods will be overwritten)
++ `Blyde.fn('name', {node:{node methods}, list:{nodelist methods}, blyde:{Blyde mothods}}, autonamespace)`: Register a plugin for Blyde (Set autonamespace true to solve conflicts, otherwise the original methods will be overwritten)
 + `Blyde.useVelocity(Velocity)`: Add Velocity manually if Velocity is not attached to `window`
 + `$(function)`: Same as `Blyde()`
 + `$.version`: Same as `Blyde.version`
