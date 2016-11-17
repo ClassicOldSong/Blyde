@@ -7,7 +7,7 @@ const replace = require('rollup-plugin-replace')
 const uglify = require('rollup-plugin-uglify')
 
 module.exports = {
-	entry: 'src/blyde.js',
+	entry: 'src/main.js',
 	devDest: 'test/blyde.js',
 	buildDest: 'dist/blyde.min.js',
 	format: 'iife',

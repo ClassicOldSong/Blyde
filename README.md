@@ -1,23 +1,26 @@
 # Blyde
-[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://raw.githubusercontent.com/ClassicOldSong/Blyde/master/LICENSE) [![npm](https://img.shields.io/npm/dt/blyde.svg?style=flat-square)](https://www.npmjs.com/package/blyde)
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://raw.githubusercontent.com/ClassicOldSong/Blyde/master/LICENSE) [![npm](https://img.shields.io/npm/dt/blyde.svg?style=flat-square)](https://www.npmjs.com/package/blyde) [![Build status](https://img.shields.io/travis/ClassicOldSong/Blyde.svg?style=flat-square)](https://travis-ci.org/ClassicOldSong/Blyde)
 
 A blade-sharp javascript library that provides serval simple jQuery like operations
 
 ## Usage
++ `node.$`: Wrap the node with Blyde, return a `$node`
++ `node.$id`: The special id for this node if wrapped by Blyde already (DO NOT MODIFY!!)
 + `Blyde(function)`: Execute the function when document is ready
-+ `Blyde.version`: Blyde v0.1.0
-+ `Blyde.fn('name', {node:{node methods}, list:{nodelist methods}}, autonamespace)`: Register a plugin for Blyde (Set autonamespace true to solve conflicts, otherwise the original methods will be maintained)
++ `Blyde.version`: Blyde v0.1.0-alpha.12
++ `Blyde.fn('name', {node:{node methods}, list:{nodelist methods}}, autonamespace)`: Register a plugin for Blyde (Set autonamespace true to solve conflicts, otherwise the original methods will be overwritten)
++ `Blyde.useVelocity(Velocity)`: Add Velocity manually if Velocity is not attached to `window`
 + `$(function)`: Same as `Blyde()`
 + `$.version`: Same as `Blyde.version`
 + `$.fn('name', {methods}, override)`: Same as `Blyde.fn()`
-+ `$.$create('tag')`: Wrapper for `document.create$node()`
-+ `$.$q('selector')`: Wrapper for `document.querySelector()`
-+ `$.$qa('selector')`: Wrapper for `document.querySelectorAll()`
++ `$.create('tag')`: Wrapper for `document.create$node()`
++ `$.q('selector')`: Wrapper for `document.querySelector()` and return a `$node`
++ `$.qa('selector')`: Wrapper for `document.querySelectorAll()` and return a `$nodeList`
 + `$.on(type, listener[, useCapture])`: Wrapper for `window.addEventListener()`
-+ `$.un(type, listener[, useCapture])`: Wrapper for `window.removeEventListener()`
++ `$.off(type, listener[, useCapture])`: Wrapper for `window.removeEventListener()`
 + `$node.$el`: The original node of this element
-+ `$node.$q('selector')`: Wrapper for `$node.querySelector()`
-+ `$node.$qa('selector')`: Wrapper for `$node.querySelectorAll()`
++ `$node.q('selector')`: Wrapper for `node.querySelector()` and return a `$node`
++ `$node.qa('selector')`: Wrapper for `node.querySelectorAll()` and return a `$nodeList`
 + `$node.addClass('classe names')`: Add classes to an element, use `space` for multiple class names
 + `$node.removeClass('class names')`: Remove classes from an element, use `space` for multiple class names
 + `$node.toggleClass('class names')`: Toggle classes for an element, use `space` for multiple class names
@@ -33,7 +36,7 @@ A blade-sharp javascript library that provides serval simple jQuery like operati
 + `$node.remove()`: Delete an element from document
 + `$node.safeRemove()`: Remove an element from document while all event listeners are still maintained
 + `$node.on(type, listener[, useCapture])`: Wrapper for `Node.addEventListener()`
-+ `$node.un(type, listener[, useCapture])`: Wrapper for `Node.removeEventListener()`
++ `$node.off(type, listener[, useCapture])`: Wrapper for `Node.removeEventListener()`
 
 + `$nodeList.addClass('classe names')`: Add classes to all elements in this nodelist, use `space` for multiple class names
 + `$nodeList.removeClass('class names')`: Remove classes from all elements in this nodelist, use `space` for multiple class names
@@ -44,7 +47,7 @@ A blade-sharp javascript library that provides serval simple jQuery like operati
 + `$nodeList.remove()`: Delete all elements in this nodelist from document
 + `$nodeList.safeRemove()`: Remove all elements in this nodelist from document while all event listeners are still maintained
 + `$nodeList.on(type, listener[, useCapture])`: Add event listener to all elements in this nodelist
-+ `$nodeList.un(type, listener[, useCapture])`: Remove event listener for all elements in this nodelist
++ `$nodeList.off(type, listener[, useCapture])`: Remove event listener for all elements in this nodelist
 
 ## Animation
 To use animation, simply add [Velocity.js](http://julian.com/research/velocity/) into your HTML before document is ready:
@@ -52,11 +55,21 @@ To use animation, simply add [Velocity.js](http://julian.com/research/velocity/)
 ``` javascript
 <script src="js/velocity.min.js"></script>
 ```
+
+or
+
+``` javascript
+import Blyde from 'blyde'
+import Velocity from 'velocity-animate'
+
+Blyde.useVelocity(Velocity)
+```
+
 Then you can use:
 + `$node.velocity(arguments)`: Animate this element
 + `$nodeList.velocity(arguments)`: Animate all elements in this nodelist
 
-Detial usage please read the instruction of [Velocity.js](http://julian.com/research/velocity/)
+Detial usage please read the instruction of [Velocity.js](http://velocityjs.org/)
 
 The usage of Velocity.js with Blyde should be similar to that with jQuery.
 
@@ -65,15 +78,14 @@ The usage of Velocity.js with Blyde should be similar to that with jQuery.
 $ git clone https://github.com/ClassicOldSong/Blyde.git
 $ cd Blyde
 $ npm install
-$ gulp
+$ npm run build
 ```
-Then you can get the fresh-built ES5lized `blyde.js` and minified `blyde.min.js` at the `dist` folder
+Then you can get the fresh-built `blyde.min.js` at the `dist` folder
 
-**Note:** Warning and error messages were removed from the minified version
+**Note:** All debugging messages were removed from the production version
 
 ## TBD
-- [x] Plugin API
-- [x] Events handler
+- [ ] Top level Events handler
 
 ## License
 [MIT](http://cos.mit-license.org/)
