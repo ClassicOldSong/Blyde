@@ -1,6 +1,6 @@
 'use strict'
 
-import log from '../debug.js'
+import { warn } from '../debug.js'
 import { $cache, $node, $nodeList } from '../shared.js'
 
 const safeZone = document.createDocumentFragment()
@@ -53,7 +53,7 @@ export default {
 			parent.replaceChild(node, this)
 			return node.$
 		} else {
-			log(this, 'may not have been attached to document properly.')
+			warn(this, 'may not have been attached to document properly.')
 			return this.$
 		}
 	},
@@ -76,7 +76,7 @@ export default {
 			if (nodeParent === null) {
 				errNodes.push(node)
 			}
-			log(...errNodes, 'may not have been attached to document properly.')
+			warn(...errNodes, 'may not have been attached to document properly.')
 			return this.$
 		}
 	},
@@ -91,7 +91,7 @@ export default {
 			})
 			this.parentNode.insertBefore(tempFragment, this)
 		} else {
-			log(this, 'may not have been attached to document properly.')
+			warn(this, 'may not have been attached to document properly.')
 		}
 		return this.$
 	},
@@ -109,14 +109,14 @@ export default {
 				this.parentNode.append(tempFragment)
 			}
 		} else {
-			log(this, 'may not have been attached to document properly.')
+			warn(this, 'may not have been attached to document properly.')
 		}
 		return this.$
 	},
 
 	append(...nodes) {
 		if ([1,9,11].indexOf(this.nodeType) === -1) {
-			log('This node type does not support method "append".')
+			warn('This node type does not support method "append".')
 			return
 		}
 		const tempFragment = document.createDocumentFragment()
@@ -130,7 +130,7 @@ export default {
 
 	prepend(...nodes) {
 		if ([1,9,11].indexOf(this.nodeType) === -1) {
-			log('This node type does not support method "prepend".')
+			warn('This node type does not support method "prepend".')
 			return
 		}
 		const tempFragment = document.createDocumentFragment()
@@ -182,9 +182,7 @@ export default {
 		if (typeof(fn) === 'function') {
 			types.forEach(i => this.addEventListener(i, fn, !!useCapture))
 			return this.$
-		} else {
-			log(fn, 'is not a function!')
-		}
+		} else warn(fn, 'is not a function!')
 	},
 
 	off(type, fn, useCapture) {
@@ -192,9 +190,7 @@ export default {
 		if (typeof(fn) === 'function') {
 			types.forEach(i => this.$el.removeEventListener(i, fn, !!useCapture))
 			return this.$
-		} else {
-			log(fn, 'is not a function!')
-		}
+		} else warn(fn, 'is not a function!')
 	},
 
 	animate(name) {

@@ -7,13 +7,13 @@ A blade-sharp javascript library that provides serval simple jQuery like operati
 + `node.$`: Wrap the node with Blyde, return a `$node`
 + `node.$id`: The special id for this node if wrapped by Blyde already (DO NOT MODIFY!!)
 + `Blyde(function)`: Execute the function when document is ready
-+ `Blyde.version`: Blyde v0.1.0-alpha.12
-+ `Blyde.fn('name', {node:{node methods}, list:{nodelist methods}, blyde:{Blyde mothods}}, autonamespace)`: Register a plugin for Blyde (Set autonamespace true to solve conflicts, otherwise the original methods will be overwritten)
++ `Blyde.version`: Version of Blyde
++ `Blyde.fn(plugin)`: Register a plugin for Blyde (See Wiki for Plugin usage \**Not Completed*\*)
 + `Blyde.useVelocity(Velocity)`: Add Velocity manually if Velocity is not attached to `window`
 + `$(function)`: Same as `Blyde()`
 + `$.version`: Same as `Blyde.version`
-+ `$.fn('name', {methods}, override)`: Same as `Blyde.fn()`
-+ `$.create('tag')`: Wrapper for `document.create$node()`
++ `$.fn(plugin)`: Same as `Blyde.fn()`
++ `$.create('tag')`: Create an element and return a `$node`
 + `$.q('selector')`: Wrapper for `document.querySelector()` and return a `$node`
 + `$.qa('selector')`: Wrapper for `document.querySelectorAll()` and return a `$nodeList`
 + `$.on(type, listener[, useCapture])`: Wrapper for `window.addEventListener()`
@@ -72,6 +72,9 @@ Then you can use:
 Detial usage please read the instruction of [Velocity.js](http://velocityjs.org/)
 
 The usage of Velocity.js with Blyde should be similar to that with jQuery.
+
+## Compatibility
+Currently only supports IE10+, if you would like to use Blyde in IE9+, simply add [classlist-polyfill](https://www.npmjs.com/package/classlist-polyfill) into your project.
 
 ## Build from source
 ```

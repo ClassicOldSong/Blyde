@@ -1,41 +1,50 @@
-/* global console, $ */
-/* eslint linebreak-style: ["error", "unix"] */
+/* global console, Blyde, define */
 "use strict"
 {
 	let ExampleFunc = function() {
 		console.log('This is an example:', this)
 	}
 
-	/**
-	node: {
-		testFunc: ExampleFunc, // New method to be registered
-		toggleClass: 'Namespaced', // Will be namespaced
-		addClass(...args) {...}  // Will be namespaced
-	},
-	list: {
-		testFunc: ExampleFunc, // New method to be registered
-		toggleClass: 'Namespaced', // Will be namespaced
-		addClass(...args) {...} // Will be namespaced
-	}
-	**/
-	$.fn('ExamplePlugin', {
+	const plugin = {
+		name: 'ExamplePlugin',
 		node: {
-			testFunc: ExampleFunc, // New method to be registered
-			toggleClass: 'Namespaced', // Will be namespaced
+			// New method to be registered
+			testFunc: ExampleFunc,
+			// Will be renamed
+			toggleClass: 'Renamed',
 			addClass(...args) {
 				this.classList.add(...args)
 				return this
 			}
 		},
 		list: {
-			testFunc: ExampleFunc, // New method to be registered
-			toggleClass: 'Namespaced', // Will be namespaced
+			// New method to be registered
+			testFunc: ExampleFunc,
+			// Will be renamed
+			toggleClass: 'Renamed',
 			addClass(...args) {
 				for (let i = 0; i < this.length; i++) {
 					this[i].classList.add(...args)
 				}
 				return this
 			}
+		},
+		blyde: {
+			// New method to be registered
+			testFunc: ExampleFunc,
+			// Will be renamed
+			version: 'wtfBlyde v0.1.0'
+		},
+		config: {
+			autoNameSpace: 'rename'
 		}
-	}, true)
+	}
+
+	if (typeof module !== 'undefined' && module.exports) {
+		module.exports = plugin
+	} else if (typeof define === 'function' && define.amd) {
+		define(() => plugin)
+	} else if (window.Blyde) {
+		Blyde.fn(plugin)
+	}
 }

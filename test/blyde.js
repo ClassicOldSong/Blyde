@@ -868,17 +868,19 @@ function localstorage(){
 }
 });
 
-var log$$1 = browser$1('[Blyde]');
+var log$$1 = browser$1('[Blyde]:log');
+var warn = browser$1('[Blyde]:warn');
+var error = browser$1('[Blyde]:error');
 
 {
-	browser$1.enable('[Blyde]');
+	browser$1.enable('[Blyde]:*');
 	log$$1('Logging is enabled!');
 }
 
 var initQuery = [];
 var loaded = false;
 
-var Blyde = function Blyde(fn) {
+var Blyde$1 = function Blyde$1(fn) {
 	if (typeof fn === 'function') {
 		if (loaded) {
 			fn.call(window);
@@ -892,12 +894,12 @@ var Blyde = function Blyde(fn) {
 
 var init = function init() {
 	document.removeEventListener('DOMContentLoaded', init, false);
-	if (window.Velocity) Blyde.useVelocity(window.Velocity);
+	if (window.Velocity) Blyde$1.useVelocity(window.Velocity);
 	loaded = true;
 	initQuery.forEach(function (i) {
 		return initQuery[i].call(window);
 	});
-	log$$1('Blyde initlized!');
+	log$$1('Blyde v' + "0.1.0-alpha.13" + ' initlized!');
 };
 
 document.addEventListener('DOMContentLoaded', init, false);
@@ -1009,43 +1011,54 @@ var $nodeList = function $nodeList(list) {
 	_Object$assign(this, $listMethods);
 };
 
-var regFn = (function (name, fns, autoNameSpace) {
-	for (var i in fns.node) {
+var regFn = (function (_ref) {
+	var name = _ref.name,
+	    node = _ref.node,
+	    list = _ref.list,
+	    blyde = _ref.blyde,
+	    _ref$config = _ref.config,
+	    config = _ref$config === undefined ? { autoNameSpace: false } : _ref$config;
+
+	if (!name) {
+		error('Plugin name not precent!');
+		return;
+	}
+	for (var i in node) {
 		var fnName = i;
 		if (methods.node[i]) {
-			if (autoNameSpace === 'rename') {
+			if (config.autoNameSpace === 'rename') {
 				fnName = name + i;
 				log$$1('Node property "' + i + '" has been set as "' + (name + i) + '".');
 			} else {
-				log$$1('Node property "' + i + '" in "' + name + '" conflicts with the original one, set "autoNameSpace" true to keep both.');
+				warn('Node property "' + i + '" in "' + name + '" conflicts with the original one, set "config.autoNameSpace" true to keep both.');
 			}
 		}
-		methods.node[fnName] = fns.node[i];
+		methods.node[fnName] = node[i];
 	}
-	for (var _i in fns.list) {
+	for (var _i in list) {
 		var _fnName = _i;
 		if (methods.list[_i]) {
-			if (autoNameSpace === 'rename') {
+			if (config.autoNameSpace === 'rename') {
 				_fnName = name + _i;
 				log$$1('Nodelist property "' + _i + '" has been set as "' + (name + _i) + '".');
 			} else {
-				log$$1('Nodelist property "' + _i + '" in "' + name + '" has replaced the original one, set "autoNameSpace" true to keep both.');
+				warn('Nodelist property "' + _i + '" in "' + name + '" has replaced the original one, set "config.autoNameSpace" true to keep both.');
 			}
 		}
-		methods.list[_fnName] = fns.list[_i];
+		methods.list[_fnName] = list[_i];
 	}
-	for (var _i2 in fns.blyde) {
+	for (var _i2 in blyde) {
 		var _fnName2 = _i2;
 		if (methods.blyde[_i2]) {
-			if (autoNameSpace === 'rename') {
+			if (config.autoNameSpace === 'rename') {
 				_fnName2 = name + _i2;
 				log$$1('Blyde property "' + _i2 + '" has been set as "' + (name + _i2) + '".');
 			} else {
-				log$$1('Blyde property "' + _i2 + '" in "' + name + '" conflicts with the original one, set "autoNameSpace" true to keep both.');
+				warn('Blyde property "' + _i2 + '" in "' + name + '" conflicts with the original one, set "config.autoNameSpace" true to keep both.');
 			}
 		}
-		methods.blyde[_fnName2] = fns.blyde[_i2];
-		Blyde[_fnName2] = fns.blyde[_i2];
+		methods.blyde[_fnName2] = blyde[_i2];
+		Blyde$1[_fnName2] = blyde[_i2];
 	}
 });
 
@@ -1449,7 +1462,7 @@ var nodeMethods = {
 			parent.replaceChild(node, this);
 			return node.$;
 		} else {
-			log$$1(this, 'may not have been attached to document properly.');
+			warn(this, 'may not have been attached to document properly.');
 			return this.$;
 		}
 	},
@@ -1471,7 +1484,7 @@ var nodeMethods = {
 			if (nodeParent === null) {
 				errNodes.push(node);
 			}
-			log$$1.apply(undefined, errNodes.concat(['may not have been attached to document properly.']));
+			warn.apply(undefined, errNodes.concat(['may not have been attached to document properly.']));
 			return this.$;
 		}
 	},
@@ -1497,7 +1510,7 @@ var nodeMethods = {
 				_this.parentNode.insertBefore(tempFragment, _this);
 			})();
 		} else {
-			log$$1(this, 'may not have been attached to document properly.');
+			warn(this, 'may not have been attached to document properly.');
 		}
 		return this.$;
 	},
@@ -1526,13 +1539,13 @@ var nodeMethods = {
 				}
 			})();
 		} else {
-			log$$1(this, 'may not have been attached to document properly.');
+			warn(this, 'may not have been attached to document properly.');
 		}
 		return this.$;
 	},
 	append: function append() {
 		if ([1, 9, 11].indexOf(this.nodeType) === -1) {
-			log$$1('This node type does not support method "append".');
+			warn('This node type does not support method "append".');
 			return;
 		}
 		var tempFragment = document.createDocumentFragment();
@@ -1550,7 +1563,7 @@ var nodeMethods = {
 	},
 	prepend: function prepend() {
 		if ([1, 9, 11].indexOf(this.nodeType) === -1) {
-			log$$1('This node type does not support method "prepend".');
+			warn('This node type does not support method "prepend".');
 			return;
 		}
 		var tempFragment = document.createDocumentFragment();
@@ -1605,9 +1618,7 @@ var nodeMethods = {
 				return _this3.addEventListener(i, fn, !!useCapture);
 			});
 			return this.$;
-		} else {
-			log$$1(fn, 'is not a function!');
-		}
+		} else warn(fn, 'is not a function!');
 	},
 	off: function off(type, fn, useCapture) {
 		var _this4 = this;
@@ -1618,9 +1629,7 @@ var nodeMethods = {
 				return _this4.$el.removeEventListener(i, fn, !!useCapture);
 			});
 			return this.$;
-		} else {
-			log$$1(fn, 'is not a function!');
-		}
+		} else warn(fn, 'is not a function!');
 	},
 	animate: function animate(name) {
 		var _this5 = this;
@@ -1700,7 +1709,7 @@ var listMethods = {
 			});
 			return this;
 		} else {
-			log$$1(fn, 'is not a function!');
+			warn(fn, 'is not a function!');
 		}
 	},
 	off: function off(type, fn, useCapture) {
@@ -1710,7 +1719,7 @@ var listMethods = {
 			});
 			return this;
 		} else {
-			log$$1(fn, 'is not a function!');
+			warn(fn, 'is not a function!');
 		}
 	}
 };
@@ -1719,7 +1728,8 @@ var velocityUsed = false;
 
 var useVelocity = function useVelocity(v) {
 	if (velocityUsed) return;
-	regFn('Velocity', {
+	regFn({
+		name: 'Velocity',
 		node: {
 			velocity: function velocity() {
 				for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
@@ -1741,31 +1751,38 @@ var useVelocity = function useVelocity(v) {
 				});
 				return this;
 			}
+		},
+		config: {
+			autoNameSpace: false
 		}
-	}, true);
+	});
 	velocityUsed = true;
 	log$$1('Velocity support added.');
 };
 
 var blydeMethods = {
-	version: 'Blyde v0.1.0-alpha12',
+	version: 'Blyde v' + "0.1.0-alpha.13",
 	fn: regFn,
 	methods: methods,
 	q: nodeMethods.q.bind(document),
 	qa: nodeMethods.qa.bind(document),
 	create: function create(tag) {
-		return document.createElement(tag);
+		return document.createElement(tag).$;
 	},
 	on: nodeMethods.on.bind(window),
 	off: nodeMethods.off.bind(window),
 	useVelocity: useVelocity
 };
 
-regFn('Blyde', {
+regFn({
+	name: 'Blyde',
 	node: nodeMethods,
 	list: listMethods,
-	blyde: blydeMethods
-}, false);
+	blyde: blydeMethods,
+	config: {
+		autoNameSpace: false
+	}
+});
 
 Object.defineProperty(Node.prototype, '$', {
 	get: function get() {
@@ -1774,18 +1791,18 @@ Object.defineProperty(Node.prototype, '$', {
 });
 
 if (typeof module !== 'undefined' && module.exports) {
-	module.exports = Blyde;
+	module.exports = Blyde$1;
 } else if (typeof define === 'function' && define.amd) {
 	define(function () {
-		return Blyde;
+		return Blyde$1;
 	});
 } else {
 	_Object$defineProperties(window, {
 		Blyde: {
-			value: Blyde
+			value: Blyde$1
 		},
 		$: {
-			value: Blyde
+			value: Blyde$1
 		}
 	});
 }

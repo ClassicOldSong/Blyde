@@ -1,6 +1,6 @@
 'use strict'
 
-import log from '../debug.js'
+import { warn } from '../debug.js'
 import nodeMethods from './node.js'
 import { $node } from '../shared.js'
 
@@ -74,7 +74,7 @@ export default {
 			})
 			return this
 		} else {
-			log(fn, 'is not a function!')
+			warn(fn, 'is not a function!')
 		}
 	},
 
@@ -85,7 +85,7 @@ export default {
 			})
 			return this
 		} else {
-			log(fn, 'is not a function!')
+			warn(fn, 'is not a function!')
 		}
 	}
 }

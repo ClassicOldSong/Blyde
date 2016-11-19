@@ -1,45 +1,49 @@
 'use strict'
 
-import log from './debug.js'
+import { log, warn, error } from './debug.js'
 import Blyde from './blyde.js'
 import { methods } from './shared.js'
 
-export default (name, fns, autoNameSpace) => {
-	for (let i in fns.node) {
+export default ({name, node, list, blyde, config = {autoNameSpace: false}}) => {
+	if (!name) {
+		error('Plugin name not precent!')
+		return
+	}
+	for (let i in node) {
 		let fnName = i
 		if (methods.node[i]) {
-			if (autoNameSpace === 'rename') {
+			if (config.autoNameSpace === 'rename') {
 				fnName = name + i
 				log(`Node property "${i}" has been set as "${name + i}".`)
 			} else {
-				log(`Node property "${i}" in "${name}" conflicts with the original one, set "autoNameSpace" true to keep both.`)
+				warn(`Node property "${i}" in "${name}" conflicts with the original one, set "config.autoNameSpace" true to keep both.`)
 			}
 		}
-		methods.node[fnName] = fns.node[i]
+		methods.node[fnName] = node[i]
 	}
-	for (let i in fns.list) {
+	for (let i in list) {
 		let fnName = i
 		if (methods.list[i]) {
-			if (autoNameSpace === 'rename') {
+			if (config.autoNameSpace === 'rename') {
 				fnName = name + i
 				log(`Nodelist property "${i}" has been set as "${name + i}".`)
 			} else {
-				log(`Nodelist property "${i}" in "${name}" has replaced the original one, set "autoNameSpace" true to keep both.`)
+				warn(`Nodelist property "${i}" in "${name}" has replaced the original one, set "config.autoNameSpace" true to keep both.`)
 			}
 		}
-		methods.list[fnName] = fns.list[i]
+		methods.list[fnName] = list[i]
 	}
-	for (let i in fns.blyde) {
+	for (let i in blyde) {
 		let fnName = i
 		if (methods.blyde[i]) {
-			if (autoNameSpace === 'rename') {
+			if (config.autoNameSpace === 'rename') {
 				fnName = name + i
 				log(`Blyde property "${i}" has been set as "${name + i}".`)
 			} else {
-				log(`Blyde property "${i}" in "${name}" conflicts with the original one, set "autoNameSpace" true to keep both.`)
+				warn(`Blyde property "${i}" in "${name}" conflicts with the original one, set "config.autoNameSpace" true to keep both.`)
 			}
 		}
-		methods.blyde[fnName] = fns.blyde[i]
-		Blyde[fnName] = fns.blyde[i]
+		methods.blyde[fnName] = blyde[i]
+		Blyde[fnName] = blyde[i]
 	}
 }
