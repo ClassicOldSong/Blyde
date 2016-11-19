@@ -1,6 +1,7 @@
+/* global VERSION */
 'use strict'
 
-import log from './debug.js'
+import { log } from './debug.js'
 
 const initQuery = []
 let loaded = false
@@ -22,7 +23,7 @@ const init = function() {
 	if (window.Velocity) Blyde.useVelocity(window.Velocity)
 	loaded = true
 	initQuery.forEach(i => initQuery[i].call(window))
-	log('Blyde initlized!')
+	log(`Blyde v${VERSION} initlized!`)
 }
 
 document.addEventListener('DOMContentLoaded', init, false)

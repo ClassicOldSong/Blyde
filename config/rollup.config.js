@@ -5,6 +5,7 @@ const resolve = require('rollup-plugin-node-resolve')
 const commonjs = require('rollup-plugin-commonjs')
 const replace = require('rollup-plugin-replace')
 const uglify = require('rollup-plugin-uglify')
+const { version } = require('../package.json')
 
 module.exports = {
 	entry: 'src/main.js',
@@ -26,6 +27,7 @@ module.exports = {
 		}),
 		replace({
 			ENV: JSON.stringify(process.env.NODE_ENV || 'development'),
+			VERSION: JSON.stringify(version)
 		}),
 		(process.env.NODE_ENV === 'production' && uglify())
 	]
