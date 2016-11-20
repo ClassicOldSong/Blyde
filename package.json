@@ -1,6 +1,6 @@
 {
   "name": "blyde",
-  "version": "0.1.0-alpha.13",
+  "version": "0.1.0-alpha.14",
   "description": "A blade-sharp javascript library that provides serval simple jQuery like operations",
   "main": "dist/blyde.min.js",
   "scripts": {
@@ -31,8 +31,8 @@
     "babel-preset-es2015-rollup": "^1.2.0",
     "babel-preset-stage-3": "^6.17.0",
     "browser-sync": "^2.17.5",
-    "debug": "^2.3.2",
     "eslint": "^3.9.1",
+    "loglevel": "^1.4.1",
     "node-watch": "^0.4.1",
     "rollup": "^0.36.3",
     "rollup-plugin-babel": "^2.6.1",

@@ -1,10 +1,11 @@
+/* global VERSION */
 'use strict'
 
 import { log, warn, error } from './debug.js'
 import Blyde from './blyde.js'
-import { methods } from './shared.js'
+import { methods, $node, $nodeList } from './shared.js'
 
-export default ({name, node, list, blyde, config = {autoNameSpace: false}}) => {
+const register = ({name, node, list, blyde}, config) => {
 	if (!name) {
 		error('Plugin name not precent!')
 		return
@@ -16,7 +17,7 @@ export default ({name, node, list, blyde, config = {autoNameSpace: false}}) => {
 				fnName = name + i
 				log(`Node property "${i}" has been set as "${name + i}".`)
 			} else {
-				warn(`Node property "${i}" in "${name}" conflicts with the original one, set "config.autoNameSpace" true to keep both.`)
+				warn(`Node property "${i}" in "${name}" conflicts with the original one, set "config.autoNameSpace" to "rename" to keep both.`)
 			}
 		}
 		methods.node[fnName] = node[i]
@@ -28,7 +29,7 @@ export default ({name, node, list, blyde, config = {autoNameSpace: false}}) => {
 				fnName = name + i
 				log(`Nodelist property "${i}" has been set as "${name + i}".`)
 			} else {
-				warn(`Nodelist property "${i}" in "${name}" has replaced the original one, set "config.autoNameSpace" true to keep both.`)
+				warn(`Nodelist property "${i}" in "${name}" has replaced the original one, set "config.autoNameSpace" to "rename" to keep both.`)
 			}
 		}
 		methods.list[fnName] = list[i]
@@ -40,10 +41,23 @@ export default ({name, node, list, blyde, config = {autoNameSpace: false}}) => {
 				fnName = name + i
 				log(`Blyde property "${i}" has been set as "${name + i}".`)
 			} else {
-				warn(`Blyde property "${i}" in "${name}" conflicts with the original one, set "config.autoNameSpace" true to keep both.`)
+				warn(`Blyde property "${i}" in "${name}" conflicts with the original one, set "config.autoNameSpace" to "rename" to keep both.`)
 			}
 		}
 		methods.blyde[fnName] = blyde[i]
 		Blyde[fnName] = blyde[i]
 	}
+	log(`Plugin "${name}" loaded.`)
 }
+
+const snapshot = {
+	version: `Blyde v${VERSION}`,
+	methods,
+	$node,
+	$nodeList,
+	log,
+	warn,
+	error
+}
+
+export default (plugin, config = {}) => register(plugin(snapshot), config)

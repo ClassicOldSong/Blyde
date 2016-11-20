@@ -1,6 +1,6 @@
 'use strict'
 
-import { warn } from '../debug.js'
+import { warn, error } from '../debug.js'
 import { $cache, $node, $nodeList } from '../shared.js'
 
 const safeZone = document.createDocumentFragment()
@@ -53,7 +53,7 @@ export default {
 			parent.replaceChild(node, this)
 			return node.$
 		} else {
-			warn(this, 'may not have been attached to document properly.')
+			error(this, 'may not have been attached to document properly.')
 			return this.$
 		}
 	},
@@ -76,7 +76,7 @@ export default {
 			if (nodeParent === null) {
 				errNodes.push(node)
 			}
-			warn(...errNodes, 'may not have been attached to document properly.')
+			error(...errNodes, 'may not have been attached to document properly.')
 			return this.$
 		}
 	},
@@ -91,7 +91,7 @@ export default {
 			})
 			this.parentNode.insertBefore(tempFragment, this)
 		} else {
-			warn(this, 'may not have been attached to document properly.')
+			error(this, 'may not have been attached to document properly.')
 		}
 		return this.$
 	},
@@ -109,7 +109,7 @@ export default {
 				this.parentNode.append(tempFragment)
 			}
 		} else {
-			warn(this, 'may not have been attached to document properly.')
+			error(this, 'may not have been attached to document properly.')
 		}
 		return this.$
 	},

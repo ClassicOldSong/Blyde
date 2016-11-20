@@ -1,15 +1,15 @@
 'use strict'
 
-import debug from 'debug'
-const log = debug('[Blyde]:log')
-const warn = debug('[Blyde]:warn')
-const error = debug('[Blyde]:error')
+import logging from 'loglevel'
+const log = (...args) => logging.info('[Blyde]', ...args)
+const warn = (...args) => logging.warn('[Blyde]', ...args)
+const error = (...args) => logging.error('[Blyde]', ...args)
 
 if (ENV === 'production') {
-	debug.enable('[Blyde]:error')
+	logging.setLevel('error')
 } else {
-	debug.enable('[Blyde]:*')
-	log('Logging is enabled!')
+	logging.setLevel('trace')
+	log('Debug logging enabled!')
 }
 
 export { log, warn, error }

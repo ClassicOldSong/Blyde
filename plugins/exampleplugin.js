@@ -1,42 +1,41 @@
 /* global console, Blyde, define */
 "use strict"
 {
-	let ExampleFunc = function() {
-		console.log('This is an example:', this)
-	}
+	const plugin = ($) => {
+		let ExampleFunc = function() {
+			$.log('This should not show up in procduction enviroment.')
+		}
 
-	const plugin = {
-		name: 'ExamplePlugin',
-		node: {
-			// New method to be registered
-			testFunc: ExampleFunc,
-			// Will be renamed
-			toggleClass: 'Renamed',
-			addClass(...args) {
-				this.classList.add(...args)
-				return this
-			}
-		},
-		list: {
-			// New method to be registered
-			testFunc: ExampleFunc,
-			// Will be renamed
-			toggleClass: 'Renamed',
-			addClass(...args) {
-				for (let i = 0; i < this.length; i++) {
-					this[i].classList.add(...args)
+		return {
+			name: 'Example',
+			node: {
+				// New method to be registered
+				testFunc: ExampleFunc,
+				// Will be renamed
+				toggleClass: 'Renamed',
+				addClass(...args) {
+					this.classList.add(...args)
+					return this
 				}
-				return this
+			},
+			list: {
+				// New method to be registered
+				testFunc: ExampleFunc,
+				// Will be renamed
+				toggleClass: 'Renamed',
+				addClass(...args) {
+					for (let i = 0; i < this.length; i++) {
+						this[i].classList.add(...args)
+					}
+					return this
+				}
+			},
+			blyde: {
+				// New method to be registered
+				testFunc: ExampleFunc,
+				// Will be renamed
+				version: `fake ${$.version}`
 			}
-		},
-		blyde: {
-			// New method to be registered
-			testFunc: ExampleFunc,
-			// Will be renamed
-			version: 'wtfBlyde v0.1.0'
-		},
-		config: {
-			autoNameSpace: 'rename'
 		}
 	}
 
@@ -45,6 +44,6 @@
 	} else if (typeof define === 'function' && define.amd) {
 		define(() => plugin)
 	} else if (window.Blyde) {
-		Blyde.fn(plugin)
+		Blyde.fn(plugin, { autoNameSpace: 'rename' })
 	}
 }

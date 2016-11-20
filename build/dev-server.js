@@ -1,4 +1,4 @@
-console.log('[RP]', 'Build starting...')
+console.log('[RD]', 'Build starting...')
 
 const rollup = require('rollup').rollup
 const watch = require('node-watch')
@@ -16,12 +16,13 @@ const reload = browserSync.reload
 let cache = {}
 
 const bundleWrite = (bundle) => {
+	console.log('[RD]', 'Writing bundle...')
 	cache = bundle
 	bundle.write({ dest, format, sourcemap })
 }
 
 watch('src', (filename) => {
-	console.log('[RP]', 'File changed:', filename)
+	console.log('[RD]', 'File changed:', filename)
 	rollup({
 		entry,
 		plugins,
@@ -31,12 +32,12 @@ watch('src', (filename) => {
 	.then(reload)
 })
 
-console.log('[RP]', 'Building...')
+console.log('[RD]', 'Building...')
 
 rollup({
 	entry,
 	plugins
 })
 .then(bundleWrite)
-.then(() => console.log('[RP]', 'Build successful! Watching files...'))
+.then(() => console.log('[RD]', 'Build successful! Starting server...'))
 .then(() => browserSync.init(bsConfig))

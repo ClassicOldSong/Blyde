@@ -1,6 +1,10 @@
 (function () {
 'use strict';
 
+var commonjsGlobal = typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
+
+
+
 function unwrapExports (x) {
 	return x && x.__esModule ? x['default'] : x;
 }
@@ -339,542 +343,257 @@ module.exports = { "default": defineProperties$2, __esModule: true };
 
 var _Object$defineProperties = unwrapExports(defineProperties$1);
 
-/**
- * Helpers.
- */
+var loglevel = createCommonjsModule(function (module) {
+/*
+* loglevel - https://github.com/pimterry/loglevel
+*
+* Copyright (c) 2013 Tim Perry
+* Licensed under the MIT license.
+*/
+(function (root, definition) {
+    "use strict";
+    if (typeof define === 'function' && define.amd) {
+        define(definition);
+    } else if (typeof module === 'object' && module.exports) {
+        module.exports = definition();
+    } else {
+        root.log = definition();
+    }
+}(commonjsGlobal, function () {
+    "use strict";
+    var noop = function() {};
+    var undefinedType = "undefined";
 
-var s = 1000;
-var m = s * 60;
-var h = m * 60;
-var d = h * 24;
-var y = d * 365.25;
-
-/**
- * Parse or format the given `val`.
- *
- * Options:
- *
- *  - `long` verbose formatting [false]
- *
- * @param {String|Number} val
- * @param {Object} options
- * @throws {Error} throw an error if val is not a non-empty string or a number
- * @return {String|Number}
- * @api public
- */
-
-var index = function (val, options) {
-  options = options || {};
-  var type = typeof val;
-  if (type === 'string' && val.length > 0) {
-    return parse(val)
-  } else if (type === 'number' && isNaN(val) === false) {
-    return options.long ?
-			fmtLong(val) :
-			fmtShort(val)
-  }
-  throw new Error('val is not a non-empty string or a valid number. val=' + JSON.stringify(val))
-};
-
-/**
- * Parse the given `str` and return milliseconds.
- *
- * @param {String} str
- * @return {Number}
- * @api private
- */
-
-function parse(str) {
-  str = String(str);
-  if (str.length > 10000) {
-    return
-  }
-  var match = /^((?:\d+)?\.?\d+) *(milliseconds?|msecs?|ms|seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|years?|yrs?|y)?$/i.exec(str);
-  if (!match) {
-    return
-  }
-  var n = parseFloat(match[1]);
-  var type = (match[2] || 'ms').toLowerCase();
-  switch (type) {
-    case 'years':
-    case 'year':
-    case 'yrs':
-    case 'yr':
-    case 'y':
-      return n * y
-    case 'days':
-    case 'day':
-    case 'd':
-      return n * d
-    case 'hours':
-    case 'hour':
-    case 'hrs':
-    case 'hr':
-    case 'h':
-      return n * h
-    case 'minutes':
-    case 'minute':
-    case 'mins':
-    case 'min':
-    case 'm':
-      return n * m
-    case 'seconds':
-    case 'second':
-    case 'secs':
-    case 'sec':
-    case 's':
-      return n * s
-    case 'milliseconds':
-    case 'millisecond':
-    case 'msecs':
-    case 'msec':
-    case 'ms':
-      return n
-    default:
-      return undefined
-  }
-}
-
-/**
- * Short format for `ms`.
- *
- * @param {Number} ms
- * @return {String}
- * @api private
- */
-
-function fmtShort(ms) {
-  if (ms >= d) {
-    return Math.round(ms / d) + 'd'
-  }
-  if (ms >= h) {
-    return Math.round(ms / h) + 'h'
-  }
-  if (ms >= m) {
-    return Math.round(ms / m) + 'm'
-  }
-  if (ms >= s) {
-    return Math.round(ms / s) + 's'
-  }
-  return ms + 'ms'
-}
-
-/**
- * Long format for `ms`.
- *
- * @param {Number} ms
- * @return {String}
- * @api private
- */
-
-function fmtLong(ms) {
-  return plural(ms, d, 'day') ||
-    plural(ms, h, 'hour') ||
-    plural(ms, m, 'minute') ||
-    plural(ms, s, 'second') ||
-    ms + ' ms'
-}
-
-/**
- * Pluralization helper.
- */
-
-function plural(ms, n, name) {
-  if (ms < n) {
-    return
-  }
-  if (ms < n * 1.5) {
-    return Math.floor(ms / n) + ' ' + name
-  }
-  return Math.ceil(ms / n) + ' ' + name + 's'
-}
-
-var debug_1 = createCommonjsModule(function (module, exports) {
-/**
- * This is the common logic for both the Node.js and web browser
- * implementations of `debug()`.
- *
- * Expose `debug()` as the module.
- */
-
-exports = module.exports = debug.debug = debug;
-exports.coerce = coerce;
-exports.disable = disable;
-exports.enable = enable;
-exports.enabled = enabled;
-exports.humanize = index;
-
-/**
- * The currently active debug mode names, and names to skip.
- */
-
-exports.names = [];
-exports.skips = [];
-
-/**
- * Map of special "%n" handling functions, for the debug "format" argument.
- *
- * Valid key names are a single, lowercased letter, i.e. "n".
- */
-
-exports.formatters = {};
-
-/**
- * Previously assigned color.
- */
-
-var prevColor = 0;
-
-/**
- * Previous log timestamp.
- */
-
-var prevTime;
-
-/**
- * Select a color.
- *
- * @return {Number}
- * @api private
- */
-
-function selectColor() {
-  return exports.colors[prevColor++ % exports.colors.length];
-}
-
-/**
- * Create a debugger with the given `namespace`.
- *
- * @param {String} namespace
- * @return {Function}
- * @api public
- */
-
-function debug(namespace) {
-
-  // define the `disabled` version
-  function disabled() {
-  }
-  disabled.enabled = false;
-
-  // define the `enabled` version
-  function enabled() {
-
-    var self = enabled;
-
-    // set `diff` timestamp
-    var curr = +new Date();
-    var ms = curr - (prevTime || curr);
-    self.diff = ms;
-    self.prev = prevTime;
-    self.curr = curr;
-    prevTime = curr;
-
-    // add the `color` if not set
-    if (null == self.useColors) self.useColors = exports.useColors();
-    if (null == self.color && self.useColors) self.color = selectColor();
-
-    var args = new Array(arguments.length);
-    for (var i = 0; i < args.length; i++) {
-      args[i] = arguments[i];
+    function realMethod(methodName) {
+        if (typeof console === undefinedType) {
+            return false; // We can't build a real method without a console to log to
+        } else if (console[methodName] !== undefined) {
+            return bindMethod(console, methodName);
+        } else if (console.log !== undefined) {
+            return bindMethod(console, 'log');
+        } else {
+            return noop;
+        }
     }
 
-    args[0] = exports.coerce(args[0]);
-
-    if ('string' !== typeof args[0]) {
-      // anything else let's inspect with %o
-      args = ['%o'].concat(args);
+    function bindMethod(obj, methodName) {
+        var method = obj[methodName];
+        if (typeof method.bind === 'function') {
+            return method.bind(obj);
+        } else {
+            try {
+                return Function.prototype.bind.call(method, obj);
+            } catch (e) {
+                // Missing bind shim or IE8 + Modernizr, fallback to wrapping
+                return function() {
+                    return Function.prototype.apply.apply(method, [obj, arguments]);
+                };
+            }
+        }
     }
 
-    // apply any `formatters` transformations
-    var index$$1 = 0;
-    args[0] = args[0].replace(/%([a-z%])/g, function(match, format) {
-      // if we encounter an escaped % then don't increase the array index
-      if (match === '%%') return match;
-      index$$1++;
-      var formatter = exports.formatters[format];
-      if ('function' === typeof formatter) {
-        var val = args[index$$1];
-        match = formatter.call(self, val);
+    // these private functions always need `this` to be set properly
 
-        // now we need to remove `args[index]` since it's inlined in the `format`
-        args.splice(index$$1, 1);
-        index$$1--;
+    function enableLoggingWhenConsoleArrives(methodName, level, loggerName) {
+        return function () {
+            if (typeof console !== undefinedType) {
+                replaceLoggingMethods.call(this, level, loggerName);
+                this[methodName].apply(this, arguments);
+            }
+        };
+    }
+
+    function replaceLoggingMethods(level, loggerName) {
+        /*jshint validthis:true */
+        for (var i = 0; i < logMethods.length; i++) {
+            var methodName = logMethods[i];
+            this[methodName] = (i < level) ?
+                noop :
+                this.methodFactory(methodName, level, loggerName);
+        }
+    }
+
+    function defaultMethodFactory(methodName, level, loggerName) {
+        /*jshint validthis:true */
+        return realMethod(methodName) ||
+               enableLoggingWhenConsoleArrives.apply(this, arguments);
+    }
+
+    var logMethods = [
+        "trace",
+        "debug",
+        "info",
+        "warn",
+        "error"
+    ];
+
+    function Logger(name, defaultLevel, factory) {
+      var self = this;
+      var currentLevel;
+      var storageKey = "loglevel";
+      if (name) {
+        storageKey += ":" + name;
       }
-      return match;
-    });
 
-    // apply env-specific formatting
-    args = exports.formatArgs.apply(self, args);
+      function persistLevelIfPossible(levelNum) {
+          var levelName = (logMethods[levelNum] || 'silent').toUpperCase();
 
-    var logFn = enabled.log || exports.log || console.log.bind(console);
-    logFn.apply(self, args);
-  }
-  enabled.enabled = true;
+          // Use localStorage if available
+          try {
+              window.localStorage[storageKey] = levelName;
+              return;
+          } catch (ignore) {}
 
-  var fn = exports.enabled(namespace) ? enabled : disabled;
+          // Use session cookie as fallback
+          try {
+              window.document.cookie =
+                encodeURIComponent(storageKey) + "=" + levelName + ";";
+          } catch (ignore) {}
+      }
 
-  fn.namespace = namespace;
+      function getPersistedLevel() {
+          var storedLevel;
 
-  return fn;
-}
+          try {
+              storedLevel = window.localStorage[storageKey];
+          } catch (ignore) {}
 
-/**
- * Enables a debug mode by namespaces. This can include modes
- * separated by a colon and wildcards.
- *
- * @param {String} namespaces
- * @api public
- */
+          if (typeof storedLevel === undefinedType) {
+              try {
+                  var cookie = window.document.cookie;
+                  var location = cookie.indexOf(
+                      encodeURIComponent(storageKey) + "=");
+                  if (location) {
+                      storedLevel = /^([^;]+)/.exec(cookie.slice(location))[1];
+                  }
+              } catch (ignore) {}
+          }
 
-function enable(namespaces) {
-  exports.save(namespaces);
+          // If the stored level is not valid, treat it as if nothing was stored.
+          if (self.levels[storedLevel] === undefined) {
+              storedLevel = undefined;
+          }
 
-  var split = (namespaces || '').split(/[\s,]+/);
-  var len = split.length;
+          return storedLevel;
+      }
 
-  for (var i = 0; i < len; i++) {
-    if (!split[i]) continue; // ignore empty strings
-    namespaces = split[i].replace(/[\\^$+?.()|[\]{}]/g, '\\$&').replace(/\*/g, '.*?');
-    if (namespaces[0] === '-') {
-      exports.skips.push(new RegExp('^' + namespaces.substr(1) + '$'));
-    } else {
-      exports.names.push(new RegExp('^' + namespaces + '$'));
+      /*
+       *
+       * Public API
+       *
+       */
+
+      self.levels = { "TRACE": 0, "DEBUG": 1, "INFO": 2, "WARN": 3,
+          "ERROR": 4, "SILENT": 5};
+
+      self.methodFactory = factory || defaultMethodFactory;
+
+      self.getLevel = function () {
+          return currentLevel;
+      };
+
+      self.setLevel = function (level, persist) {
+          if (typeof level === "string" && self.levels[level.toUpperCase()] !== undefined) {
+              level = self.levels[level.toUpperCase()];
+          }
+          if (typeof level === "number" && level >= 0 && level <= self.levels.SILENT) {
+              currentLevel = level;
+              if (persist !== false) {  // defaults to true
+                  persistLevelIfPossible(level);
+              }
+              replaceLoggingMethods.call(self, level, name);
+              if (typeof console === undefinedType && level < self.levels.SILENT) {
+                  return "No console available for logging";
+              }
+          } else {
+              throw "log.setLevel() called with invalid level: " + level;
+          }
+      };
+
+      self.setDefaultLevel = function (level) {
+          if (!getPersistedLevel()) {
+              self.setLevel(level, false);
+          }
+      };
+
+      self.enableAll = function(persist) {
+          self.setLevel(self.levels.TRACE, persist);
+      };
+
+      self.disableAll = function(persist) {
+          self.setLevel(self.levels.SILENT, persist);
+      };
+
+      // Initialize with the right level
+      var initialLevel = getPersistedLevel();
+      if (initialLevel == null) {
+          initialLevel = defaultLevel == null ? "WARN" : defaultLevel;
+      }
+      self.setLevel(initialLevel, false);
     }
-  }
-}
 
-/**
- * Disable debug output.
- *
- * @api public
- */
+    /*
+     *
+     * Package-level API
+     *
+     */
 
-function disable() {
-  exports.enable('');
-}
+    var defaultLogger = new Logger();
 
-/**
- * Returns true if the given mode name is enabled, false otherwise.
- *
- * @param {String} name
- * @return {Boolean}
- * @api public
- */
+    var _loggersByName = {};
+    defaultLogger.getLogger = function getLogger(name) {
+        if (typeof name !== "string" || name === "") {
+          throw new TypeError("You must supply a name when creating a logger.");
+        }
 
-function enabled(name) {
-  var i, len;
-  for (i = 0, len = exports.skips.length; i < len; i++) {
-    if (exports.skips[i].test(name)) {
-      return false;
-    }
-  }
-  for (i = 0, len = exports.names.length; i < len; i++) {
-    if (exports.names[i].test(name)) {
-      return true;
-    }
-  }
-  return false;
-}
+        var logger = _loggersByName[name];
+        if (!logger) {
+          logger = _loggersByName[name] = new Logger(
+            name, defaultLogger.getLevel(), defaultLogger.methodFactory);
+        }
+        return logger;
+    };
 
-/**
- * Coerce `val`.
- *
- * @param {Mixed} val
- * @return {Mixed}
- * @api private
- */
+    // Grab the current global log variable in case of overwrite
+    var _log = (typeof window !== undefinedType) ? window.log : undefined;
+    defaultLogger.noConflict = function() {
+        if (typeof window !== undefinedType &&
+               window.log === defaultLogger) {
+            window.log = _log;
+        }
 
-function coerce(val) {
-  if (val instanceof Error) return val.stack || val.message;
-  return val;
-}
+        return defaultLogger;
+    };
+
+    return defaultLogger;
+}));
 });
 
-var browser$1 = createCommonjsModule(function (module, exports) {
-/**
- * This is the web browser implementation of `debug()`.
- *
- * Expose `debug()` as the module.
- */
+var log = function log() {
+	for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+		args[_key] = arguments[_key];
+	}
 
-exports = module.exports = debug_1;
-exports.log = log;
-exports.formatArgs = formatArgs;
-exports.save = save;
-exports.load = load;
-exports.useColors = useColors;
-exports.storage = 'undefined' != typeof chrome
-               && 'undefined' != typeof chrome.storage
-                  ? chrome.storage.local
-                  : localstorage();
-
-/**
- * Colors.
- */
-
-exports.colors = [
-  'lightseagreen',
-  'forestgreen',
-  'goldenrod',
-  'dodgerblue',
-  'darkorchid',
-  'crimson'
-];
-
-/**
- * Currently only WebKit-based Web Inspectors, Firefox >= v31,
- * and the Firebug extension (any Firefox version) are known
- * to support "%c" CSS customizations.
- *
- * TODO: add a `localStorage` variable to explicitly enable/disable colors
- */
-
-function useColors() {
-  // is webkit? http://stackoverflow.com/a/16459606/376773
-  // document is undefined in react-native: https://github.com/facebook/react-native/pull/1632
-  return (typeof document !== 'undefined' && 'WebkitAppearance' in document.documentElement.style) ||
-    // is firebug? http://stackoverflow.com/a/398120/376773
-    (window.console && (console.firebug || (console.exception && console.table))) ||
-    // is firefox >= v31?
-    // https://developer.mozilla.org/en-US/docs/Tools/Web_Console#Styling_messages
-    (navigator.userAgent.toLowerCase().match(/firefox\/(\d+)/) && parseInt(RegExp.$1, 10) >= 31);
-}
-
-/**
- * Map %j to `JSON.stringify()`, since no Web Inspectors do that by default.
- */
-
-exports.formatters.j = function(v) {
-  return JSON.stringify(v);
+	return loglevel.info.apply(loglevel, ['[Blyde]'].concat(args));
 };
+var warn = function warn() {
+	for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+		args[_key2] = arguments[_key2];
+	}
 
+	return loglevel.warn.apply(loglevel, ['[Blyde]'].concat(args));
+};
+var error = function error() {
+	for (var _len3 = arguments.length, args = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
+		args[_key3] = arguments[_key3];
+	}
 
-/**
- * Colorize log arguments if enabled.
- *
- * @api public
- */
-
-function formatArgs() {
-  var args = arguments;
-  var useColors = this.useColors;
-
-  args[0] = (useColors ? '%c' : '')
-    + this.namespace
-    + (useColors ? ' %c' : ' ')
-    + args[0]
-    + (useColors ? '%c ' : ' ')
-    + '+' + exports.humanize(this.diff);
-
-  if (!useColors) return args;
-
-  var c = 'color: ' + this.color;
-  args = [args[0], c, 'color: inherit'].concat(Array.prototype.slice.call(args, 1));
-
-  // the final "%c" is somewhat tricky, because there could be other
-  // arguments passed either before or after the %c, so we need to
-  // figure out the correct index to insert the CSS into
-  var index = 0;
-  var lastC = 0;
-  args[0].replace(/%[a-z%]/g, function(match) {
-    if ('%%' === match) return;
-    index++;
-    if ('%c' === match) {
-      // we only are interested in the *last* %c
-      // (the user may have provided their own)
-      lastC = index;
-    }
-  });
-
-  args.splice(lastC, 0, c);
-  return args;
-}
-
-/**
- * Invokes `console.log()` when available.
- * No-op when `console.log` is not a "function".
- *
- * @api public
- */
-
-function log() {
-  // this hackery is required for IE8/9, where
-  // the `console.log` function doesn't have 'apply'
-  return 'object' === typeof console
-    && console.log
-    && Function.prototype.apply.call(console.log, console, arguments);
-}
-
-/**
- * Save `namespaces`.
- *
- * @param {String} namespaces
- * @api private
- */
-
-function save(namespaces) {
-  try {
-    if (null == namespaces) {
-      exports.storage.removeItem('debug');
-    } else {
-      exports.storage.debug = namespaces;
-    }
-  } catch(e) {}
-}
-
-/**
- * Load `namespaces`.
- *
- * @return {String} returns the previously persisted debug modes
- * @api private
- */
-
-function load() {
-  var r;
-  try {
-    r = exports.storage.debug;
-  } catch(e) {}
-
-  // If debug isn't set in LS, and we're in Electron, try to load $DEBUG
-  if ('env' in (typeof process === 'undefined' ? {} : process)) {
-    r = process.env.DEBUG;
-  }
-  
-  return r;
-}
-
-/**
- * Enable namespaces listed in `localStorage.debug` initially.
- */
-
-exports.enable(load());
-
-/**
- * Localstorage attempts to return the localstorage.
- *
- * This is necessary because safari throws
- * when a user disables cookies/localstorage
- * and you attempt to access it.
- *
- * @return {LocalStorage}
- * @api private
- */
-
-function localstorage(){
-  try {
-    return window.localStorage;
-  } catch (e) {}
-}
-});
-
-var log$$1 = browser$1('[Blyde]:log');
-var warn = browser$1('[Blyde]:warn');
-var error = browser$1('[Blyde]:error');
+	return loglevel.error.apply(loglevel, ['[Blyde]'].concat(args));
+};
 
 {
-	browser$1.enable('[Blyde]:*');
-	log$$1('Logging is enabled!');
+	loglevel.setLevel('trace');
+	log('Debug logging enabled!');
 }
 
 var initQuery = [];
@@ -888,7 +607,7 @@ var Blyde$1 = function Blyde$1(fn) {
 			initQuery.push(fn);
 		}
 	} else {
-		log$$1(fn, 'is not a function!');
+		log(fn, 'is not a function!');
 	}
 };
 
@@ -899,7 +618,7 @@ var init = function init() {
 	initQuery.forEach(function (i) {
 		return initQuery[i].call(window);
 	});
-	log$$1('Blyde v' + "0.1.0-alpha.13" + ' initlized!');
+	log('Blyde v' + "0.1.0-alpha.14" + ' initlized!');
 };
 
 document.addEventListener('DOMContentLoaded', init, false);
@@ -990,13 +709,15 @@ var $node = function $node(node) {
 	_classCallCheck(this, $node);
 
 	this.$el = node;
-	Object.defineProperty(node, '$id', { value: $cache.length });
 	var $nodeMethods = {};
 	for (var i in methods.node) {
 		$nodeMethods[i] = methods.node[i].bind(node);
 	}
 	_Object$assign(this, $nodeMethods);
-	$cache.push(this);
+	if (node.$id) $cache[node.$id] = this;else {
+		Object.defineProperty(node, '$id', { value: $cache.length });
+		$cache.push(this);
+	}
 };
 var $nodeList = function $nodeList(list) {
 	_classCallCheck(this, $nodeList);
@@ -1011,13 +732,11 @@ var $nodeList = function $nodeList(list) {
 	_Object$assign(this, $listMethods);
 };
 
-var regFn = (function (_ref) {
+var register = function register(_ref, config) {
 	var name = _ref.name,
 	    node = _ref.node,
 	    list = _ref.list,
-	    blyde = _ref.blyde,
-	    _ref$config = _ref.config,
-	    config = _ref$config === undefined ? { autoNameSpace: false } : _ref$config;
+	    blyde = _ref.blyde;
 
 	if (!name) {
 		error('Plugin name not precent!');
@@ -1028,9 +747,9 @@ var regFn = (function (_ref) {
 		if (methods.node[i]) {
 			if (config.autoNameSpace === 'rename') {
 				fnName = name + i;
-				log$$1('Node property "' + i + '" has been set as "' + (name + i) + '".');
+				log('Node property "' + i + '" has been set as "' + (name + i) + '".');
 			} else {
-				warn('Node property "' + i + '" in "' + name + '" conflicts with the original one, set "config.autoNameSpace" true to keep both.');
+				warn('Node property "' + i + '" in "' + name + '" conflicts with the original one, set "config.autoNameSpace" to "rename" to keep both.');
 			}
 		}
 		methods.node[fnName] = node[i];
@@ -1040,9 +759,9 @@ var regFn = (function (_ref) {
 		if (methods.list[_i]) {
 			if (config.autoNameSpace === 'rename') {
 				_fnName = name + _i;
-				log$$1('Nodelist property "' + _i + '" has been set as "' + (name + _i) + '".');
+				log('Nodelist property "' + _i + '" has been set as "' + (name + _i) + '".');
 			} else {
-				warn('Nodelist property "' + _i + '" in "' + name + '" has replaced the original one, set "config.autoNameSpace" true to keep both.');
+				warn('Nodelist property "' + _i + '" in "' + name + '" has replaced the original one, set "config.autoNameSpace" to "rename" to keep both.');
 			}
 		}
 		methods.list[_fnName] = list[_i];
@@ -1052,14 +771,30 @@ var regFn = (function (_ref) {
 		if (methods.blyde[_i2]) {
 			if (config.autoNameSpace === 'rename') {
 				_fnName2 = name + _i2;
-				log$$1('Blyde property "' + _i2 + '" has been set as "' + (name + _i2) + '".');
+				log('Blyde property "' + _i2 + '" has been set as "' + (name + _i2) + '".');
 			} else {
-				warn('Blyde property "' + _i2 + '" in "' + name + '" conflicts with the original one, set "config.autoNameSpace" true to keep both.');
+				warn('Blyde property "' + _i2 + '" in "' + name + '" conflicts with the original one, set "config.autoNameSpace" to "rename" to keep both.');
 			}
 		}
 		methods.blyde[_fnName2] = blyde[_i2];
 		Blyde$1[_fnName2] = blyde[_i2];
 	}
+	log('Plugin "' + name + '" loaded.');
+};
+
+var snapshot = {
+	version: 'Blyde v' + "0.1.0-alpha.14",
+	methods: methods,
+	$node: $node,
+	$nodeList: $nodeList,
+	log: log,
+	warn: warn,
+	error: error
+};
+
+var regFn = (function (plugin) {
+	var config = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+	return register(plugin(snapshot), config);
 });
 
 var toInteger$2 = _toInteger;
@@ -1462,7 +1197,7 @@ var nodeMethods = {
 			parent.replaceChild(node, this);
 			return node.$;
 		} else {
-			warn(this, 'may not have been attached to document properly.');
+			error(this, 'may not have been attached to document properly.');
 			return this.$;
 		}
 	},
@@ -1484,7 +1219,7 @@ var nodeMethods = {
 			if (nodeParent === null) {
 				errNodes.push(node);
 			}
-			warn.apply(undefined, errNodes.concat(['may not have been attached to document properly.']));
+			error.apply(undefined, errNodes.concat(['may not have been attached to document properly.']));
 			return this.$;
 		}
 	},
@@ -1510,7 +1245,7 @@ var nodeMethods = {
 				_this.parentNode.insertBefore(tempFragment, _this);
 			})();
 		} else {
-			warn(this, 'may not have been attached to document properly.');
+			error(this, 'may not have been attached to document properly.');
 		}
 		return this.$;
 	},
@@ -1539,7 +1274,7 @@ var nodeMethods = {
 				}
 			})();
 		} else {
-			warn(this, 'may not have been attached to document properly.');
+			error(this, 'may not have been attached to document properly.');
 		}
 		return this.$;
 	},
@@ -1728,60 +1463,59 @@ var velocityUsed = false;
 
 var useVelocity = function useVelocity(v) {
 	if (velocityUsed) return;
-	regFn({
-		name: 'Velocity',
-		node: {
-			velocity: function velocity() {
-				for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-					args[_key] = arguments[_key];
-				}
+	regFn(function () {
+		velocityUsed = true;
+		log('Velocity support added!');
+		return {
+			name: 'Velocity',
+			node: {
+				velocity: function velocity() {
+					for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+						args[_key] = arguments[_key];
+					}
 
-				v.apply(undefined, [this].concat(args));
-				return this.$;
-			}
-		},
-		list: {
-			velocity: function velocity() {
-				for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-					args[_key2] = arguments[_key2];
+					v.apply(undefined, [this].concat(args));
+					return this.$;
 				}
+			},
+			list: {
+				velocity: function velocity() {
+					for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+						args[_key2] = arguments[_key2];
+					}
 
-				this.forEach(function (i) {
-					return v.apply(undefined, [i.$el].concat(args));
-				});
-				return this;
+					this.forEach(function (i) {
+						return v.apply(undefined, [i.$el].concat(args));
+					});
+					return this;
+				}
 			}
-		},
-		config: {
-			autoNameSpace: false
-		}
+		};
+	}, {
+		autoNameSpace: false
 	});
-	velocityUsed = true;
-	log$$1('Velocity support added.');
 };
 
 var blydeMethods = {
-	version: 'Blyde v' + "0.1.0-alpha.13",
+	version: 'Blyde v' + "0.1.0-alpha.14",
 	fn: regFn,
-	methods: methods,
 	q: nodeMethods.q.bind(document),
 	qa: nodeMethods.qa.bind(document),
-	create: function create(tag) {
-		return document.createElement(tag).$;
-	},
 	on: nodeMethods.on.bind(window),
 	off: nodeMethods.off.bind(window),
 	useVelocity: useVelocity
 };
 
-regFn({
-	name: 'Blyde',
-	node: nodeMethods,
-	list: listMethods,
-	blyde: blydeMethods,
-	config: {
-		autoNameSpace: false
-	}
+regFn(function () {
+	var plugin = {
+		name: 'Blyde',
+		node: nodeMethods,
+		list: listMethods,
+		blyde: blydeMethods
+	};
+	return plugin;
+}, {
+	autoNameSpace: false
 });
 
 Object.defineProperty(Node.prototype, '$', {
