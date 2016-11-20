@@ -7,14 +7,16 @@ import listMethods from './methods/list.js'
 import blydeMethods from './methods/blyde.js'
 import { $cache } from './shared.js'
 
-regFn({
-	name: 'Blyde',
-	node: nodeMethods,
-	list: listMethods,
-	blyde: blydeMethods,
-	config: {
-		autoNameSpace: false
+regFn(() => {
+	const plugin = {
+		name: 'Blyde',
+		node: nodeMethods,
+		list: listMethods,
+		blyde: blydeMethods
 	}
+	return plugin
+}, {
+	autoNameSpace: false
 })
 
 Object.defineProperty(Node.prototype, '$', {

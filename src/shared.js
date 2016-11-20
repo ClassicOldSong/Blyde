@@ -9,13 +9,16 @@ const $cache = []
 const $node = class {
 	constructor(node) {
 		this.$el = node
-		Object.defineProperty(node, '$id', {value: $cache.length})
 		let $nodeMethods = {}
 		for (let i in methods.node) {
 			$nodeMethods[i] = methods.node[i].bind(node)
 		}
 		Object.assign(this, $nodeMethods)
-		$cache.push(this)
+		if (node.$id) $cache[node.$id] = this
+		else {
+			Object.defineProperty(node, '$id', {value: $cache.length})
+			$cache.push(this)
+		}
 	}
 }
 const $nodeList = class {

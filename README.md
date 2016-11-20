@@ -13,7 +13,6 @@ A blade-sharp javascript library that provides serval simple jQuery like operati
 + `$(function)`: Same as `Blyde()`
 + `$.version`: Same as `Blyde.version`
 + `$.fn(plugin)`: Same as `Blyde.fn()`
-+ `$.create('tag')`: Create an element and return a `$node`
 + `$.q('selector')`: Wrapper for `document.querySelector()` and return a `$node`
 + `$.qa('selector')`: Wrapper for `document.querySelectorAll()` and return a `$nodeList`
 + `$.on(type, listener[, useCapture])`: Wrapper for `window.addEventListener()`
