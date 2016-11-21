@@ -1,6 +1,6 @@
 {
   "name": "blyde",
-  "version": "0.1.0-alpha.14",
+  "version": "0.1.0-alpha.15",
   "description": "A blade-sharp javascript library that provides serval simple jQuery like operations",
   "main": "dist/blyde.min.js",
   "scripts": {
@@ -26,7 +26,9 @@
   "homepage": "https://github.com/ClassicOldSong/Blyde#readme",
   "devDependencies": {
     "babel-cli": "^6.18.0",
+    "babel-plugin-closure-elimination": "^1.1.14",
     "babel-plugin-external-helpers": "^6.18.0",
+    "babel-plugin-tailcall-optimization": "^1.0.11",
     "babel-plugin-transform-runtime": "^6.15.0",
     "babel-preset-es2015-rollup": "^1.2.0",
     "babel-preset-stage-3": "^6.17.0",

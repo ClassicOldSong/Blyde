@@ -50,14 +50,21 @@ const register = ({name, node, list, blyde}, config) => {
 	log(`Plugin "${name}" loaded.`)
 }
 
-const snapshot = {
-	version: `Blyde v${VERSION}`,
-	methods,
-	$node,
-	$nodeList,
-	log,
-	warn,
-	error
+const takeSnapshot = () => {
+	const methodsShot = {
+		node: Object.assign({}, methods.node),
+		list: Object.assign({}, methods.list),
+		blyde: Object.assign({}, methods.blyde)
+	}
+	return {
+		version: `Blyde v${VERSION}`,
+		methods: methodsShot,
+		$node,
+		$nodeList,
+		log,
+		warn,
+		error
+	}
 }
 
-export default (plugin, config = {}) => register(plugin(snapshot), config)
+export default (plugin, config = {}) => register(plugin(takeSnapshot()), config)

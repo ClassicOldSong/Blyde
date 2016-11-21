@@ -18,6 +18,7 @@ rollup({
 	plugins
 })
 .then((bundle) => {
+	console.log('Writing bundle...')
 	bundle.write({ dest, format })
 })
 .then(() => console.log('Build successful!'))

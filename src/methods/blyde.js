@@ -1,7 +1,6 @@
 /* global VERSION */
 'use strict'
 
-import { log } from '../debug.js'
 import regFn from '../register.js'
 import nodeMethods from './node.js'
 
@@ -11,7 +10,6 @@ const useVelocity = (v) => {
 	if (velocityUsed) return
 	regFn(() => {
 		velocityUsed = true
-		log('Velocity support added!')
 		return {
 			name: 'Velocity',
 			node: {
