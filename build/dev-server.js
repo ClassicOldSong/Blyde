@@ -6,7 +6,7 @@ const {
 	entry,
 	devDest: dest,
 	format,
-	sourcemap,
+	sourceMap,
 	plugins
 } = require('../config/rollup.config')
 const browserSync = require('browser-sync').create()
@@ -18,19 +18,21 @@ let cache = {}
 const bundleWrite = (bundle) => {
 	console.log('[RD]', 'Writing bundle...')
 	cache = bundle
-	bundle.write({ dest, format, sourcemap })
+	bundle.write({ dest, format, sourceMap })
 }
 
-watch('src', (filename) => {
-	console.log('[RD]', 'File changed:', filename)
-	rollup({
-		entry,
-		plugins,
-		cache
+const startWatch = () => {
+	watch('src', (filename) => {
+		console.log('[RD]', 'File changed:', filename)
+		rollup({
+			entry,
+			plugins,
+			cache
+		})
+		.then(bundleWrite)
+		.then(reload)
 	})
-	.then(bundleWrite)
-	.then(reload)
-})
+}
 
 console.log('[RD]', 'Building...')
 
@@ -41,3 +43,4 @@ rollup({
 .then(bundleWrite)
 .then(() => console.log('[RD]', 'Build successful! Starting server...'))
 .then(() => browserSync.init(bsConfig))
+.then(startWatch)

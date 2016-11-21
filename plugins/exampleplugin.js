@@ -46,6 +46,6 @@
 	} else if (typeof define === 'function' && define.amd) {
 		define(() => plugin)
 	} else if (window.Blyde) {
-		Blyde.fn(plugin, { autoNameSpace: 'rename' })
+		window.Blyde.fn(plugin, { autoNameSpace: 'rename' })
 	}
 }
