@@ -30,6 +30,7 @@ var _aFunction = function(it){
   return it;
 };
 
+// optional / simple context binding
 var aFunction = _aFunction;
 var _ctx = function(fn, that, length){
   aFunction(fn);
@@ -68,6 +69,7 @@ var _fails = function(exec){
   }
 };
 
+// Thank's IE8 for his funny defineProperty
 var _descriptors = !_fails(function(){
   return Object.defineProperty({}, 'a', {get: function(){ return 7; }}).a != 7;
 });
@@ -83,6 +85,7 @@ var _ie8DomDefine = !_descriptors && !_fails(function(){
   return Object.defineProperty(_domCreate('div'), 'a', {get: function(){ return 7; }}).a != 7;
 });
 
+// 7.1.1 ToPrimitive(input [, PreferredType])
 var isObject$2 = _isObject;
 // instead of the ES6 spec version, we didn't implement @@toPrimitive case
 // and the second argument - flag - preferred type is a string
@@ -207,6 +210,7 @@ var _cof = function(it){
   return toString.call(it).slice(8, -1);
 };
 
+// fallback for non-array-like ES3 and non-enumerable old V8 strings
 var cof = _cof;
 var _iobject = Object('z').propertyIsEnumerable(0) ? Object : function(it){
   return cof(it) == 'String' ? it.split('') : Object(it);
@@ -218,6 +222,7 @@ var _defined = function(it){
   return it;
 };
 
+// to indexed object, toObject with fallback for non-array-like ES3 strings
 var IObject = _iobject;
 var defined = _defined;
 var _toIobject = function(it){
@@ -231,6 +236,7 @@ var _toInteger = function(it){
   return isNaN(it = +it) ? 0 : (it > 0 ? floor : ceil)(it);
 };
 
+// 7.1.15 ToLength
 var toInteger = _toInteger;
 var min       = Math.min;
 var _toLength = function(it){
@@ -245,6 +251,8 @@ var _toIndex = function(index, length){
   return index < 0 ? max(index + length, 0) : min$1(index, length);
 };
 
+// false -> Array#indexOf
+// true  -> Array#includes
 var toIObject$1 = _toIobject;
 var toLength  = _toLength;
 var toIndex   = _toIndex;
@@ -307,6 +315,7 @@ var _enumBugKeys = (
   'constructor,hasOwnProperty,isPrototypeOf,propertyIsEnumerable,toLocaleString,toString,valueOf'
 ).split(',');
 
+// 19.1.2.14 / 15.2.3.14 Object.keys(O)
 var $keys       = _objectKeysInternal;
 var enumBugKeys = _enumBugKeys;
 
@@ -611,14 +620,16 @@ var Blyde$1 = function Blyde$1(fn) {
 	}
 };
 
+function _ref$1(i) {
+	return initQuery[i].call(window);
+}
+
 var init = function init() {
 	document.removeEventListener('DOMContentLoaded', init, false);
 	if (window.Velocity) Blyde$1.useVelocity(window.Velocity);
 	loaded = true;
-	initQuery.forEach(function (i) {
-		return initQuery[i].call(window);
-	});
-	log('Blyde v' + "0.1.0-alpha.14" + ' initlized!');
+	initQuery.forEach(_ref$1);
+	log('Blyde v' + "0.1.0-alpha.15" + ' initlized!');
 };
 
 document.addEventListener('DOMContentLoaded', init, false);
@@ -636,11 +647,13 @@ var _objectPie = {
 	f: f$2
 };
 
+// 7.1.13 ToObject(argument)
 var defined$1 = _defined;
 var _toObject = function(it){
   return Object(defined$1(it));
 };
 
+// 19.1.2.1 Object.assign(target, source, ...)
 var getKeys$1  = _objectKeys;
 var gOPS     = _objectGops;
 var pIE      = _objectPie;
@@ -673,6 +686,7 @@ var _objectAssign = !$assign || _fails(function(){
   } return T;
 } : $assign;
 
+// 19.1.3.1 Object.assign(target, source)
 var $export$2 = _export;
 
 $export$2($export$2.S + $export$2.F, 'Object', {assign: _objectAssign});
@@ -711,7 +725,7 @@ var $node = function $node(node) {
 	this.$el = node;
 	var $nodeMethods = {};
 	for (var i in methods.node) {
-		$nodeMethods[i] = methods.node[i].bind(node);
+		if (methods.node[i] instanceof Function) $nodeMethods[i] = methods.node[i].bind(node);else $nodeMethods[i] = methods.node[i];
 	}
 	_Object$assign(this, $nodeMethods);
 	if (node.$id) $cache[node.$id] = this;else {
@@ -727,7 +741,7 @@ var $nodeList = function $nodeList(list) {
 		this.$list.push(list[i].$);
 	}var $listMethods = {};
 	for (var _i in methods.list) {
-		$listMethods[_i] = methods.list[_i].bind(this.$list);
+		if (methods.list[_i] instanceof Function) $listMethods[_i] = methods.list[_i].bind(this.$list);else $listMethods[_i] = methods.node[_i];
 	}
 	_Object$assign(this, $listMethods);
 };
@@ -782,19 +796,26 @@ var register = function register(_ref, config) {
 	log('Plugin "' + name + '" loaded.');
 };
 
-var snapshot = {
-	version: 'Blyde v' + "0.1.0-alpha.14",
-	methods: methods,
-	$node: $node,
-	$nodeList: $nodeList,
-	log: log,
-	warn: warn,
-	error: error
+var takeSnapshot = function takeSnapshot() {
+	var methodsShot = {
+		node: _Object$assign({}, methods.node),
+		list: _Object$assign({}, methods.list),
+		blyde: _Object$assign({}, methods.blyde)
+	};
+	return {
+		version: 'Blyde v' + "0.1.0-alpha.15",
+		methods: methodsShot,
+		$node: $node,
+		$nodeList: $nodeList,
+		log: log,
+		warn: warn,
+		error: error
+	};
 };
 
 var regFn = (function (plugin) {
 	var config = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-	return register(plugin(snapshot), config);
+	return register(plugin(takeSnapshot()), config);
 });
 
 var toInteger$2 = _toInteger;
@@ -823,6 +844,7 @@ var _iterators = {};
 
 var _html = _global.document && document.documentElement;
 
+// 19.1.2.2 / 15.2.3.5 Object.create(O [, Properties])
 var anObject$2    = _anObject;
 var dPs         = _objectDps;
 var enumBugKeys$1 = _enumBugKeys;
@@ -899,6 +921,7 @@ var _iterCreate = function(Constructor, NAME, next){
   setToStringTag$1(Constructor, NAME + ' Iterator');
 };
 
+// 19.1.2.9 / 15.2.3.2 Object.getPrototypeOf(O)
 var has$3         = _has;
 var toObject$1    = _toObject;
 var IE_PROTO$2    = _sharedKey('IE_PROTO');
@@ -999,6 +1022,7 @@ _iterDefine(String, 'String', function(iterated){
   return {value: point, done: false};
 });
 
+// call something on iterator step with safe closing on error
 var anObject$3 = _anObject;
 var _iterCall = function(iterator, fn, value, entries){
   try {
@@ -1011,6 +1035,7 @@ var _iterCall = function(iterator, fn, value, entries){
   }
 };
 
+// check on default Array iterator
 var Iterators$1  = _iterators;
 var ITERATOR$1   = _wks('iterator');
 var ArrayProto = Array.prototype;
@@ -1027,6 +1052,7 @@ var _createProperty = function(object, index, value){
   else object[index] = value;
 };
 
+// getting tag from 19.1.3.6 Object.prototype.toString()
 var cof$1 = _cof;
 var TAG$1 = _wks('toStringTag');
 var ARG = cof$1(function(){ return arguments; }()) == 'Arguments';
@@ -1227,23 +1253,25 @@ var nodeMethods = {
 		var _arguments = arguments,
 		    _this = this;
 
+		function _ref() {
+			var tempFragment = document.createDocumentFragment();
+
+			for (_len = _arguments.length, nodes = Array(_len), _key = 0; _key < _len; _key++) {
+				nodes[_key] = _arguments[_key];
+			}
+
+			nodes.reverse();
+			nodes.forEach(function (i) {
+				if (i instanceof $node) i = i.$el;
+				tempFragment.appendChild(i);
+			});
+			_this.parentNode.insertBefore(tempFragment, _this);
+		}
+
 		if (this.parentNode) {
 			var _len, nodes, _key;
 
-			(function () {
-				var tempFragment = document.createDocumentFragment();
-
-				for (_len = _arguments.length, nodes = Array(_len), _key = 0; _key < _len; _key++) {
-					nodes[_key] = _arguments[_key];
-				}
-
-				nodes.reverse();
-				nodes.forEach(function (i) {
-					if (i instanceof $node) i = i.$el;
-					tempFragment.appendChild(i);
-				});
-				_this.parentNode.insertBefore(tempFragment, _this);
-			})();
+			_ref();
 		} else {
 			error(this, 'may not have been attached to document properly.');
 		}
@@ -1253,26 +1281,28 @@ var nodeMethods = {
 		var _arguments2 = arguments,
 		    _this2 = this;
 
+		function _ref2() {
+			var tempFragment = document.createDocumentFragment();
+
+			for (_len2 = _arguments2.length, nodes = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+				nodes[_key2] = _arguments2[_key2];
+			}
+
+			nodes.forEach(function (i) {
+				if (i instanceof $node) i = i.$el;
+				tempFragment.appendChild(i);
+			});
+			if (_this2.nextSibling) {
+				_this2.parentNode.insertBefore(tempFragment, _this2.nextSibling);
+			} else {
+				_this2.parentNode.append(tempFragment);
+			}
+		}
+
 		if (this.parentNode) {
 			var _len2, nodes, _key2;
 
-			(function () {
-				var tempFragment = document.createDocumentFragment();
-
-				for (_len2 = _arguments2.length, nodes = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-					nodes[_key2] = _arguments2[_key2];
-				}
-
-				nodes.forEach(function (i) {
-					if (i instanceof $node) i = i.$el;
-					tempFragment.appendChild(i);
-				});
-				if (_this2.nextSibling) {
-					_this2.parentNode.insertBefore(tempFragment, _this2.nextSibling);
-				} else {
-					_this2.parentNode.append(tempFragment);
-				}
-			})();
+			_ref2();
 		} else {
 			error(this, 'may not have been attached to document properly.');
 		}
@@ -1378,6 +1408,18 @@ var nodeMethods = {
 	}
 };
 
+function _ref$2(i) {
+	i.empty();
+}
+
+function _ref2(i) {
+	i.remove();
+}
+
+function _ref3(i) {
+	i.safeRemove();
+}
+
 var listMethods = {
 	addClass: function addClass(className) {
 		this.forEach(function (i) {
@@ -1420,38 +1462,36 @@ var listMethods = {
 		return this;
 	},
 	empty: function empty() {
-		this.forEach(function (i) {
-			i.empty();
-		});
+		this.forEach(_ref$2);
 		return this;
 	},
 	remove: function remove() {
-		this.forEach(function (i) {
-			i.remove();
-		});
+		this.forEach(_ref2);
 		return this;
 	},
 	safeRemove: function safeRemove() {
-		this.forEach(function (i) {
-			i.safeRemove();
-		});
+		this.forEach(_ref3);
 		return this;
 	},
 	on: function on(type, fn, useCapture) {
+		function _ref4(i) {
+			i.on(type, fn, !!useCapture);
+		}
+
 		if (typeof fn === 'function') {
-			this.forEach(function (i) {
-				i.on(type, fn, !!useCapture);
-			});
+			this.forEach(_ref4);
 			return this;
 		} else {
 			warn(fn, 'is not a function!');
 		}
 	},
 	off: function off(type, fn, useCapture) {
+		function _ref5(i) {
+			i.off(type, fn, !!useCapture);
+		}
+
 		if (typeof fn === 'function') {
-			this.forEach(function (i) {
-				i.off(type, fn, !!useCapture);
-			});
+			this.forEach(_ref5);
 			return this;
 		} else {
 			warn(fn, 'is not a function!');
@@ -1463,32 +1503,36 @@ var velocityUsed = false;
 
 var useVelocity = function useVelocity(v) {
 	if (velocityUsed) return;
+
+	function _velocity() {
+		for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+			args[_key] = arguments[_key];
+		}
+
+		v.apply(undefined, [this].concat(args));
+		return this.$;
+	}
+
+	function _velocity2() {
+		for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+			args[_key2] = arguments[_key2];
+		}
+
+		this.forEach(function (i) {
+			return v.apply(undefined, [i.$el].concat(args));
+		});
+		return this;
+	}
+
 	regFn(function () {
 		velocityUsed = true;
-		log('Velocity support added!');
 		return {
 			name: 'Velocity',
 			node: {
-				velocity: function velocity() {
-					for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-						args[_key] = arguments[_key];
-					}
-
-					v.apply(undefined, [this].concat(args));
-					return this.$;
-				}
+				velocity: _velocity
 			},
 			list: {
-				velocity: function velocity() {
-					for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-						args[_key2] = arguments[_key2];
-					}
-
-					this.forEach(function (i) {
-						return v.apply(undefined, [i.$el].concat(args));
-					});
-					return this;
-				}
+				velocity: _velocity2
 			}
 		};
 	}, {
@@ -1497,7 +1541,7 @@ var useVelocity = function useVelocity(v) {
 };
 
 var blydeMethods = {
-	version: 'Blyde v' + "0.1.0-alpha.14",
+	version: 'Blyde v' + "0.1.0-alpha.15",
 	fn: regFn,
 	q: nodeMethods.q.bind(document),
 	qa: nodeMethods.qa.bind(document),
@@ -1524,12 +1568,14 @@ Object.defineProperty(Node.prototype, '$', {
 	}
 });
 
+function _ref() {
+	return Blyde$1;
+}
+
 if (typeof module !== 'undefined' && module.exports) {
 	module.exports = Blyde$1;
 } else if (typeof define === 'function' && define.amd) {
-	define(function () {
-		return Blyde$1;
-	});
+	define(_ref);
 } else {
 	_Object$defineProperties(window, {
 		Blyde: {

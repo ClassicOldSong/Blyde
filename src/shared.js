@@ -11,7 +11,8 @@ const $node = class {
 		this.$el = node
 		let $nodeMethods = {}
 		for (let i in methods.node) {
-			$nodeMethods[i] = methods.node[i].bind(node)
+			if (methods.node[i] instanceof Function) $nodeMethods[i] = methods.node[i].bind(node)
+			else $nodeMethods[i] = methods.node[i]
 		}
 		Object.assign(this, $nodeMethods)
 		if (node.$id) $cache[node.$id] = this
@@ -27,7 +28,8 @@ const $nodeList = class {
 		for (let i = 0; i < list.length; i++) this.$list.push(list[i].$)
 		let $listMethods = {}
 		for (let i in methods.list) {
-			$listMethods[i] = methods.list[i].bind(this.$list)
+			if (methods.list[i] instanceof Function) $listMethods[i] = methods.list[i].bind(this.$list)
+			else $listMethods[i] = methods.node[i]
 		}
 		Object.assign(this, $listMethods)
 	}

@@ -4,6 +4,8 @@
 	const plugin = ($) => {
 		let ExampleFunc = function() {
 			$.log('This should not show up in procduction enviroment.')
+			$.warn('This also should not show up in procduction enviroment.')
+			$.error('This SHOULD show up in procduction enviroment!')
 		}
 
 		return {

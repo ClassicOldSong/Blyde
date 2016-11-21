@@ -4,6 +4,8 @@
 		["transform-runtime", {
 			"polyfill": true
 		}],
+		"closure-elimination",
+		"tailcall-optimization",
 		"external-helpers"
 	],
 	"comments": false
