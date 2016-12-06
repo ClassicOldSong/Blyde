@@ -5,7 +5,7 @@ const methods = {
 	list: {},
 	blyde: {}
 }
-const $cache = {}
+
 const $node = class {
 	constructor(node) {
 		this.$el = node
@@ -21,7 +21,6 @@ const $node = class {
 			id = Math.floor(Math.random() * Math.pow(10, 16)).toString(36)
 			Object.defineProperty(node, '$id', {value: id})
 		}
-		$cache[id] = this
 	}
 }
 const $nodeList = class {
@@ -37,4 +36,4 @@ const $nodeList = class {
 	}
 }
 
-export { methods, $cache, $node, $nodeList }
+export { methods, $node, $nodeList }
