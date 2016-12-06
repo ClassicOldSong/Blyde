@@ -5,7 +5,7 @@ const methods = {
 	list: {},
 	blyde: {}
 }
-const $cache = []
+const $cache = {}
 const $node = class {
 	constructor(node) {
 		this.$el = node
@@ -15,11 +15,13 @@ const $node = class {
 			else $nodeMethods[i] = methods.node[i]
 		}
 		Object.assign(this, $nodeMethods)
-		if (node.$id) $cache[node.$id] = this
+		let id = ''
+		if (node.$id) id = node.$id
 		else {
-			Object.defineProperty(node, '$id', {value: $cache.length})
-			$cache.push(this)
+			id = Math.floor(Math.random() * Math.pow(10, 16)).toString(36)
+			Object.defineProperty(node, '$id', {value: id})
 		}
+		$cache[id] = this
 	}
 }
 const $nodeList = class {

@@ -168,8 +168,10 @@ export default {
 	},
 
 	remove() {
+		const id = this.$id
 		this.parentNode.removeChild(this)
-		return this.$
+		$cache[id] = null
+		return this
 	},
 
 	safeRemove() {
@@ -191,14 +193,14 @@ export default {
 			types.forEach(i => this.$el.removeEventListener(i, fn, !!useCapture))
 			return this.$
 		} else warn(fn, 'is not a function!')
-	},
-
-	animate(name) {
-		this.$.addClass(`${name}-trans`)
-		setTimeout(() => {
-			this.$.addClass(`${name}-start`)
-			this.$.addClass(`${name}-end`)
-		}, 0)
-		return this.$
 	}
+
+	// animate(name) {
+	// 	this.$.addClass(`${name}-trans`)
+	// 	setTimeout(() => {
+	// 		this.$.addClass(`${name}-start`)
+	// 		this.$.addClass(`${name}-end`)
+	// 	}, 0)
+	// 	return this.$
+	// }
 }

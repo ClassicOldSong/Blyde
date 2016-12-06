@@ -6,7 +6,7 @@ env.NODE_ENV = 'production'
 const rollup = require('rollup').rollup
 const {
 	entry,
-	buildDest: dest,
+	proDest: dest,
 	format,
 	plugins
 } = require('../config/rollup.config')

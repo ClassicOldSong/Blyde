@@ -5,9 +5,11 @@ import { log, warn, error } from './debug.js'
 import Blyde from './blyde.js'
 import { methods, $node, $nodeList } from './shared.js'
 
+const plugins = {}
+
 const register = ({name, node, list, blyde}, config) => {
 	if (!name) {
-		error('Plugin name not precent!')
+		error('Plugin name not precent! Registration aborted.')
 		return
 	}
 	for (let i in node) {
@@ -59,6 +61,7 @@ const register = ({name, node, list, blyde}, config) => {
 			Blyde[i] = blyde[i]
 		}
 	}
+	plugins[name] = { node, list, blyde }
 	log(`Plugin "${name}" loaded.`)
 }
 
@@ -68,9 +71,18 @@ const takeSnapshot = () => {
 		list: Object.assign({}, methods.list),
 		blyde: Object.assign({}, methods.blyde)
 	}
+	const pluginShot = {}
+	for (let i in plugins) {
+		pluginShot[i] = {
+			node: Object.assign({}, plugins[i].node),
+			list: Object.assign({}, plugins[i].list),
+			blyde: Object.assign({}, plugins[i].blyde)
+		}
+	}
 	return {
 		version: `Blyde v${VERSION}`,
 		methods: methodsShot,
+		plugins: pluginShot,
 		$node,
 		$nodeList,
 		log,
@@ -79,4 +91,6 @@ const takeSnapshot = () => {
 	}
 }
 
-export default (plugin, config = {}) => register(plugin(takeSnapshot()), config)
+export default (plugin, config = {}) => {
+	register(plugin(takeSnapshot()), config)
+}

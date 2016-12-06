@@ -5,7 +5,7 @@ import regFn from './register.js'
 import nodeMethods from './methods/node.js'
 import listMethods from './methods/list.js'
 import blydeMethods from './methods/blyde.js'
-import { $cache } from './shared.js'
+import { $cache, $node } from './shared.js'
 
 regFn(() => {
 	const plugin = {
@@ -21,8 +21,8 @@ regFn(() => {
 
 Object.defineProperty(Node.prototype, '$', {
 	get() {
-		if (this.$id && this.$id in $cache) return $cache[this.$id]
-		else return nodeMethods.q.call(this, this)
+		if (this.$id && $cache[this.$id]) return $cache[this.$id]
+		else return new $node(this)
 	}
 })
 
