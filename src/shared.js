@@ -15,12 +15,7 @@ const $node = class {
 			else $nodeMethods[i] = methods.node[i]
 		}
 		Object.assign(this, $nodeMethods)
-		let id = ''
-		if (node.$id) id = node.$id
-		else {
-			id = Math.floor(Math.random() * Math.pow(10, 16)).toString(36)
-			Object.defineProperty(node, '$id', {value: id})
-		}
+		if (!node.$id) Object.defineProperty(node, '$id', {value: Math.floor(Math.random() * Math.pow(10, 16)).toString(36)})
 	}
 }
 const $nodeList = class {
