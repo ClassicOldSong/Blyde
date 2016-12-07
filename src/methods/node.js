@@ -245,9 +245,9 @@ export default {
 								}
 								return true
 							})()) this.removeEventListener(i, this.$.__eventHandler__, true)
-							if (this.$.listeners[node.$id].length === 0) {
+							if (Object.keys(this.$.listeners[node.$id]).length === 0) {
 								delete this.$.listeners[node.$id]
-								if (this.$.listeners.length === 0) delete this.$.listeners
+								if (Object.keys(this.$.listeners).length === 0) delete this.$.listeners
 							}
 						}
 					}
