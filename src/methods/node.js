@@ -4,6 +4,17 @@ import { warn, error } from '../debug.js'
 import { $node, $nodeList } from '../shared.js'
 
 const safeZone = document.createDocumentFragment()
+const evtHandler = function(e, listeners) {
+	const target = (() => {
+		for (let i of e.path) {
+			if (i.$id && listeners[i.$id]) return i
+		}
+	})()
+	if (!target) return
+	if (listeners[target.$id][e.type]) {
+		listeners[target.$id][e.type].forEach(i => i.call(target, e))
+	}
+}
 
 export default {
 	q(selector) {
@@ -178,7 +189,7 @@ export default {
 
 	on(type, fn, useCapture) {
 		const types = type.split(' ')
-		if (typeof(fn) === 'function') {
+		if (typeof fn === 'function') {
 			types.forEach(i => this.addEventListener(i, fn, !!useCapture))
 			return this.$
 		} else warn(fn, 'is not a function!')
@@ -186,10 +197,69 @@ export default {
 
 	off(type, fn, useCapture) {
 		const types = type.split(' ')
-		if (typeof(fn) === 'function') {
+		if (typeof fn === 'function') {
 			types.forEach(i => this.$el.removeEventListener(i, fn, !!useCapture))
 			return this.$
 		} else warn(fn, 'is not a function!')
+	},
+
+	__eventHandler__(e) {
+		evtHandler(e, this.$.listeners)
+	},
+
+	at(type, node, fn) {
+		if (node instanceof $node) node = node.$el
+		else node = node.$.$el
+		const types = type.split(' ')
+		if (typeof fn === 'function') {
+			types.forEach((i) => {
+				if (i !== '') {
+					if (!this.$.listeners) this.$.listeners = {}
+					if (!this.$.listeners[node.$id]) {
+						this.addEventListener(i, this.$.__eventHandler__, true)
+						this.$.listeners[node.$id] = {}
+					}
+					if (!this.$.listeners[node.$id][i]) this.$.listeners[node.$id][i] = []
+					this.$.listeners[node.$id][i].push(fn)
+				}
+			})
+			return this.$
+		} else warn(fn, 'is not a function!')
+	},
+
+	un(type, node, fn) {
+		if (node instanceof $node) node = node.$el
+		else node = node.$.$el
+		const types = type.split(' ')
+		if (typeof fn === 'function') {
+			if (this.$.listeners && this.$.listeners[node.$id]) {
+				types.forEach((i) => {
+					if (i !== '' && this.$.listeners[node.$id][i]) {
+						const fns = this.$.listeners[node.$id][i]
+						fns.splice(fns.indexOf(fn), 1)
+						if (this.$.listeners[node.$id][i].length === 0) {
+							delete this.$.listeners[node.$id][i]
+							if ((() => {
+								for (let j in this.$.listeners) {
+									if (this.$.listeners[j][i]) return false
+								}
+								return true
+							})()) this.removeEventListener(i, this.$.__eventHandler__, true)
+							if (this.$.listeners[node.$id].length === 0) {
+								delete this.$.listeners[node.$id]
+								if (this.$.listeners.length === 0) delete this.$.listeners
+							}
+						}
+					}
+				})
+			}
+			return this.$
+		} else warn(fn, 'is not a function!')
+	},
+
+	trigger(event, config) {
+		if (typeof event === 'string') event = new Event(event, config)
+		this.dispatchEvent(event)
 	}
 
 	// animate(name) {

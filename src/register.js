@@ -87,7 +87,8 @@ const takeSnapshot = () => {
 		$nodeList,
 		log,
 		warn,
-		error
+		error,
+		takeSnapshot
 	}
 }
 
