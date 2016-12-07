@@ -68,7 +68,7 @@ export default {
 	},
 
 	on(type, fn, useCapture) {
-		if (typeof(fn) === 'function') {
+		if (typeof fn === 'function') {
 			this.forEach((i) => {
 				i.on(type, fn, !!useCapture)
 			})
@@ -79,7 +79,7 @@ export default {
 	},
 
 	off(type, fn, useCapture) {
-		if (typeof(fn) === 'function') {
+		if (typeof fn === 'function') {
 			this.forEach((i) => {
 				i.off(type, fn, !!useCapture)
 			})
@@ -87,5 +87,10 @@ export default {
 		} else {
 			warn(fn, 'is not a function!')
 		}
+	},
+
+	trigger(event, config) {
+		if (typeof event === 'string') event = new Event(event, config)
+		this.forEach(i => i.trigger(event))
 	}
 }
