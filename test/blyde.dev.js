@@ -290,7 +290,7 @@ var init = function init() {
 	if (window.Velocity) Blyde$1.useVelocity(window.Velocity);
 	loaded = true;
 	initQuery.forEach(_ref$1);
-	log('Blyde v' + "0.1.0-alpha.19.dev.1df5a38" + ' initlized!');
+	log('Blyde v' + "0.1.0-alpha.19.dev.dbb6c45" + ' initlized!');
 };
 
 document.addEventListener('DOMContentLoaded', init, false);
@@ -787,7 +787,7 @@ var takeSnapshot = function takeSnapshot() {
 		};
 	}
 	return {
-		version: 'Blyde v' + "0.1.0-alpha.19.dev.1df5a38",
+		version: 'Blyde v' + "0.1.0-alpha.19.dev.dbb6c45",
 		methods: methodsShot,
 		plugins: pluginShot,
 		$node: $node,
@@ -1730,7 +1730,7 @@ var useVelocity = function useVelocity(v) {
 };
 
 var blydeMethods = {
-	version: 'Blyde v' + "0.1.0-alpha.19.dev.1df5a38",
+	version: 'Blyde v' + "0.1.0-alpha.19.dev.dbb6c45",
 	fn: regFn,
 	q: nodeMethods.q.bind(document),
 	qa: nodeMethods.qa.bind(document),
