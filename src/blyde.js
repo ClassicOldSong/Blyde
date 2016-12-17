@@ -22,7 +22,7 @@ const init = function() {
 	document.removeEventListener('DOMContentLoaded', init, false)
 	if (window.Velocity) Blyde.useVelocity(window.Velocity)
 	loaded = true
-	initQuery.forEach(i => initQuery[i].call(window))
+	initQuery.forEach(i => i.call(window))
 	log(`Blyde v${VERSION} initlized!`)
 }
 
