@@ -51,8 +51,9 @@ A blade-sharp javascript library that provides serval simple jQuery like operati
 + `$nodeList.empty()`: Delete all childnodes from elements in this nodelist
 + `$nodeList.remove()`: Delete all elements in this nodelist from document
 + `$nodeList.safeRemove()`: Remove all elements in this nodelist from document while all event listeners are still maintained
-+ `$nodeList.on(type, listener[, useCapture])`: Add event listener to all elements in this nodelist
-+ `$nodeList.off(type, listener[, useCapture])`: Remove event listener for all elements in this nodelist
++ `$nodeList.on(type, fn[, useCapture])`: Add event listener to all elements in this nodelist
++ `$nodeList.at(type, fn)`: Create delegate to all elements in this nodelist on `window`
++ `$nodeList.off(type, fn[, useCapture])`: Remove event listener for all elements in this nodelist
 
 ## Animation
 To use animation, simply add [Velocity.js](http://julian.com/research/velocity/) into your HTML before document is ready:
