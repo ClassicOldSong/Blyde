@@ -1,8 +1,10 @@
 /* global console, define */
 "use strict"
 {
-	const plugin = ($) => {
-		$.log('Examin all properties that Blyde pass to a plugin here:\n', $)
+	const plugin = (takeSnapShot) => {
+		// Get the latest snapshot of Blyde
+		const $ = takeSnapShot()
+		$.log('Examin all properties that Blyde pass to a snapshot here:\n', $)
 		let ExampleFunc = function() {
 			$.log('This should not show up in procduction enviroment.')
 			$.warn('This also should not show up in procduction enviroment.')

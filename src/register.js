@@ -1,7 +1,7 @@
 /* global VERSION */
 'use strict'
 
-import { log, warn, error } from './debug.js'
+import { log, info, warn, error } from './debug.js'
 import Blyde from './blyde.js'
 import { methods, $node, $nodeList } from './shared.js'
 
@@ -14,12 +14,12 @@ const register = ({name, node, list, blyde}, config) => {
 	}
 	for (let i in node) {
 		if (methods.node[i]) {
-			if (config.autoNameSpace === 'keep') log(`$node property "${i}" has been kept.`)
+			if (config.autoNameSpace === 'keep') info(`$node property "${i}" has been kept.`)
 			else {
 				let fnName = i
 				if (config.autoNameSpace === 'rename') {
 					fnName = name + i
-					log(`$node property "${i}" has been renamed to "${fnName}".`)
+					info(`$node property "${i}" has been renamed to "${fnName}".`)
 				} else {
 					warn(`$node property "${i}" in "${name}" has replaced the original one, set "config.autoNameSpace" to "rename" to keep both.`)
 				}
@@ -29,12 +29,12 @@ const register = ({name, node, list, blyde}, config) => {
 	}
 	for (let i in list) {
 		if (methods.list[i]) {
-			if (config.autoNameSpace === 'keep') log(`$nodeList property "${i}" has been kept.`)
+			if (config.autoNameSpace === 'keep') info(`$nodeList property "${i}" has been kept.`)
 			else {
 				let fnName = i
 				if (config.autoNameSpace === 'rename') {
 					fnName = name + i
-					log(`$nodeList property "${i}" has been renamed to "${fnName}".`)
+					info(`$nodeList property "${i}" has been renamed to "${fnName}".`)
 				} else {
 					warn(`$nodeList property "${i}" in "${name}" has replaced the original one, set "config.autoNameSpace" to "rename" to keep both.`)
 				}
@@ -44,12 +44,12 @@ const register = ({name, node, list, blyde}, config) => {
 	}
 	for (let i in blyde) {
 		if (methods.blyde[i]) {
-			if (config.autoNameSpace === 'keep') log(`Blyde property "${i}" has been kept.`)
+			if (config.autoNameSpace === 'keep') info(`Blyde property "${i}" has been kept.`)
 			else {
 				let fnName = i
 				if (config.autoNameSpace === 'rename') {
 					fnName = name + i
-					log(`Blyde property "${i}" has been renamed to "${fnName}".`)
+					info(`Blyde property "${i}" has been renamed to "${fnName}".`)
 				} else {
 					warn(`Blyde property "${i}" in "${name}" has replaced the original one, set "config.autoNameSpace" to "rename" to keep both.`)
 				}
@@ -62,7 +62,7 @@ const register = ({name, node, list, blyde}, config) => {
 		}
 	}
 	plugins[name] = { node, list, blyde }
-	log(`Plugin "${name}" loaded.`)
+	info(`Plugin "${name}" loaded.`)
 }
 
 const takeSnapshot = () => {
@@ -86,12 +86,12 @@ const takeSnapshot = () => {
 		$node,
 		$nodeList,
 		log,
+		info,
 		warn,
-		error,
-		takeSnapshot
+		error
 	}
 }
 
 export default (plugin, config = {}) => {
-	register(plugin(takeSnapshot()), config)
+	register(plugin(takeSnapshot), config)
 }

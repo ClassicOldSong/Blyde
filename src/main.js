@@ -2,7 +2,7 @@
 'use strict'
 
 import Blyde from './loader.js'
-import { log } from './debug.js'
+import { warn } from './debug.js'
 
 if (typeof module !== 'undefined' && module.exports) {
 	module.exports = Blyde
@@ -10,6 +10,6 @@ if (typeof module !== 'undefined' && module.exports) {
 	define(() => Blyde)
 } else {
 	Object.defineProperty(window, 'Blyde', { value: Blyde })
-	if (window.$) log(`"window.$" may have been taken by another library, use "window.Blyde" for non-conflict usage.`)
+	if (window.$) warn(`"window.$" may have been taken by another library, use "window.Blyde" for non-conflict usage.`)
 	else Object.defineProperty(window, '$', { value: Blyde })
 }

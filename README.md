@@ -16,37 +16,44 @@ A blade-sharp javascript library that provides serval simple jQuery like operati
 + `$.q('selector')`: Wrapper for `document.querySelector()` and return a `$node`
 + `$.qa('selector')`: Wrapper for `document.querySelectorAll()` and return a `$nodeList`
 + `$.on(type, listener[, useCapture])`: Wrapper for `window.addEventListener()`
-+ `$.off(type, listener[, useCapture])`: Wrapper for `window.removeEventListener()`
++ `$.listen(type, node, fn)`: Create a delegate for a node on `window`
++ `$.at(type, fn)`: Create a delegate for window on `window`
++ `$.drop(type, node, fn)`: Remove a delegate for a node on `window`
++ `$.off(type, fn[, useCapture])`: Remove enentListeners for this element with `window.removeEventListener()` & `window.drop()`
 + `$node.$el`: The original node of this element
 + `$node.q('selector')`: Wrapper for `node.querySelector()` and return a `$node`
 + `$node.qa('selector')`: Wrapper for `node.querySelectorAll()` and return a `$nodeList`
-+ `$node.addClass('classe names')`: Add classes to an element, use `space` for multiple class names
-+ `$node.removeClass('class names')`: Remove classes from an element, use `space` for multiple class names
-+ `$node.toggleClass('class names')`: Toggle classes for an element, use `space` for multiple class names
-+ `$node.replaceWith(node)`: Replace element with a new element
-+ `$node.swap(node)`: Swap an element with another
-+ `$node.before(node)`: Insert an element before this element
-+ `$node.after(node)`: Insert an element after this element
++ `$node.addClass('classe names')`: Add classes to this element, use `space` for multiple class names
++ `$node.removeClass('class names')`: Remove classes from this element, use `space` for multiple class names
++ `$node.toggleClass('class names')`: Toggle classes for this element, use `space` for multiple class names
++ `$node.replaceWith(node)`: Replace this element with a new element
++ `$node.swap(node)`: Swap this element with another
++ `$node.before(node)`: Insert this element before an element
++ `$node.after(node)`: Insert this element after an element
 + `$node.append(nodes)`: Append elements to this element
 + `$node.prepend(nodes)`: Prepend elements to this element
 + `$node.appendTo(node)`: Append this element to an element
 + `$node.prependTo(node)`: Prepend this element to an element
-+ `$node.empty()`: Delete all childnodes from an element
-+ `$node.remove()`: Delete an element from document
-+ `$node.safeRemove()`: Remove an element from document while all event listeners are still maintained
-+ `$node.on(type, listener[, useCapture])`: Wrapper for `Node.addEventListener()`
-+ `$node.off(type, listener[, useCapture])`: Wrapper for `Node.removeEventListener()`
++ `$node.empty()`: Delete all childnodes from this element
++ `$node.remove()`: Delete this element from document
++ `$node.safeRemove()`: Remove this element from document while all event listeners are still maintained
++ `$node.on(type, fn[, useCapture])`: Wrapper for `Node.addEventListener()`
++ `$node.listen(type, node, fn)`: Create a delegate for a node on this element
++ `$node.at(type, fn)`: Create a delegate for this element on `window`
++ `$node.drop(type, node, fn)`: Remove a delegate for a node on this element
++ `$node.off(type, fn[, useCapture])`: Remove enentListeners for this element with `Node.removeEventListener()` & `$.drop()`
 
 + `$nodeList.addClass('classe names')`: Add classes to all elements in this nodelist, use `space` for multiple class names
 + `$nodeList.removeClass('class names')`: Remove classes from all elements in this nodelist, use `space` for multiple class names
 + `$nodeList.toggleClass('class names')`: Toggle classes for all elements in this nodelist, use `space` for multiple class names
-+ `$nodeList.appendTo(node)`: Append all elements in this nodelist to an element
-+ `$nodeList.prependTo(node)`: Prepend all elements in this nodelist to an element
++ `$nodeList.appendTo(node)`: Append all elements in this nodelist to this element
++ `$nodeList.prependTo(node)`: Prepend all elements in this nodelist to this element
 + `$nodeList.empty()`: Delete all childnodes from elements in this nodelist
 + `$nodeList.remove()`: Delete all elements in this nodelist from document
 + `$nodeList.safeRemove()`: Remove all elements in this nodelist from document while all event listeners are still maintained
-+ `$nodeList.on(type, listener[, useCapture])`: Add event listener to all elements in this nodelist
-+ `$nodeList.off(type, listener[, useCapture])`: Remove event listener for all elements in this nodelist
++ `$nodeList.on(type, fn[, useCapture])`: Add event listener to all elements in this nodelist
++ `$nodeList.at(type, fn)`: Create delegate to all elements in this nodelist on `window`
++ `$nodeList.off(type, fn[, useCapture])`: Remove event listener for all elements in this nodelist
 
 ## Animation
 To use animation, simply add [Velocity.js](http://julian.com/research/velocity/) into your HTML before document is ready:
@@ -87,7 +94,7 @@ Then you can get the fresh-built `blyde.min.js` at the `dist` folder
 **Note:** All debugging messages were removed from the production version
 
 ## TBD
-- [ ] Top level Events handler
+- [x] Top level Events handler
 
 ## License
 [MIT](http://cos.mit-license.org/)

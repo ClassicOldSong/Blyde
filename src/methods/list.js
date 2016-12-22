@@ -73,9 +73,16 @@ export default {
 				i.on(type, fn, !!useCapture)
 			})
 			return this
-		} else {
-			warn(fn, 'is not a function!')
-		}
+		} else warn(fn, 'is not a function!')
+	},
+
+	at(type, fn) {
+		if (typeof fn === 'function') {
+			this.forEach((i) => {
+				i.at(type, fn)
+			})
+			return this
+		} else warn(fn, 'is not a function!')
 	},
 
 	off(type, fn, useCapture) {
@@ -84,9 +91,7 @@ export default {
 				i.off(type, fn, !!useCapture)
 			})
 			return this
-		} else {
-			warn(fn, 'is not a function!')
-		}
+		} else warn(fn, 'is not a function!')
 	},
 
 	trigger(event, config) {
