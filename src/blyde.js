@@ -1,7 +1,7 @@
 /* global VERSION */
 'use strict'
 
-import { log } from './debug.js'
+import { info, warn } from './debug.js'
 
 const initQuery = []
 let loaded = false
@@ -14,7 +14,7 @@ const Blyde = (fn) => {
 			initQuery.push(fn)
 		}
 	} else {
-		log(fn, 'is not a function!')
+		warn(fn, 'is not a function!')
 	}
 }
 
@@ -23,7 +23,7 @@ const init = function() {
 	if (window.Velocity) Blyde.useVelocity(window.Velocity)
 	loaded = true
 	initQuery.forEach(i => i.call(window))
-	log(`Blyde v${VERSION} initlized!`)
+	info(`Blyde v${VERSION} initlized!`)
 }
 
 document.addEventListener('DOMContentLoaded', init, false)
