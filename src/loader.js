@@ -6,7 +6,7 @@ import nodeMethods from './methods/node.js'
 import listMethods from './methods/list.js'
 import blydeMethods from './methods/blyde.js'
 import eventHandlers from './methods/event.js'
-import { $node } from './shared.js'
+import { $cache, $node } from './shared.js'
 
 regFn(() => {
 	const plugin = {
@@ -22,8 +22,7 @@ regFn(() => {
 
 Object.defineProperty(Node.prototype, '$', {
 	get() {
-		Object.defineProperty(this, '$', { value: new $node(this) })
-		return this.$
+		return $cache[this.$id] || new $node(this)
 	}
 })
 

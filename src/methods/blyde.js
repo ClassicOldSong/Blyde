@@ -4,6 +4,7 @@
 import regFn from '../register.js'
 import nodeMethods from './node.js'
 import eventHandlers from './event.js'
+import { $getSymbol } from '../shared.js'
 
 let velocityUsed = false
 
@@ -60,5 +61,6 @@ export default {
 		eventHandlers.trigger.call(window, ...args)
 		return this
 	},
+	$getSymbol,
 	useVelocity
 }

@@ -3,73 +3,70 @@
 
 import { log, info, warn, error } from './debug.js'
 import Blyde from './blyde.js'
-import { methods, $node, $nodeList } from './shared.js'
+import { $getSymbol, $methods, $node, $nodeList } from './shared.js'
 
 const plugins = {}
 
-const register = ({name, node, list, blyde}, config) => {
-	if (!name) {
-		error('Plugin name not precent! Registration aborted.')
-		return
-	}
+const register = ({name, node, list, blyde}, options) => {
+	if (!name) return error('Plugin name not precent! Registration aborted.')
+	if (name in plugins) return warn(`Plugin "${name}" has already been registered.`)
 	for (let i in node) {
-		if (methods.node[i]) {
-			if (config.autoNameSpace === 'keep') info(`$node property "${i}" has been kept.`)
+		if ($methods.node[i]) {
+			if (options.autoNameSpace === 'keep') info(`$node property "${i}" has been kept.`)
 			else {
 				let fnName = i
-				if (config.autoNameSpace === 'rename') {
+				if (options.autoNameSpace === 'rename') {
 					fnName = name + i
 					info(`$node property "${i}" has been renamed to "${fnName}".`)
 				} else {
-					warn(`$node property "${i}" in "${name}" has replaced the original one, set "config.autoNameSpace" to "rename" to keep both.`)
+					warn(`$node property "${i}" in "${name}" has replaced the original one, set "options.autoNameSpace" to "rename" to keep both.`)
 				}
-				methods.node[fnName] = node[i]
+				$methods.node[fnName] = node[i]
 			}
-		} else methods.node[i] = node[i]
+		} else $methods.node[i] = node[i]
 	}
 	for (let i in list) {
-		if (methods.list[i]) {
-			if (config.autoNameSpace === 'keep') info(`$nodeList property "${i}" has been kept.`)
+		if ($methods.list[i]) {
+			if (options.autoNameSpace === 'keep') info(`$nodeList property "${i}" has been kept.`)
 			else {
 				let fnName = i
-				if (config.autoNameSpace === 'rename') {
+				if (options.autoNameSpace === 'rename') {
 					fnName = name + i
 					info(`$nodeList property "${i}" has been renamed to "${fnName}".`)
 				} else {
-					warn(`$nodeList property "${i}" in "${name}" has replaced the original one, set "config.autoNameSpace" to "rename" to keep both.`)
+					warn(`$nodeList property "${i}" in "${name}" has replaced the original one, set "options.autoNameSpace" to "rename" to keep both.`)
 				}
-				methods.list[fnName] = list[i]
+				$methods.list[fnName] = list[i]
 			}
-		} else methods.list[i] = list[i]
+		} else $methods.list[i] = list[i]
 	}
 	for (let i in blyde) {
-		if (methods.blyde[i]) {
-			if (config.autoNameSpace === 'keep') info(`Blyde property "${i}" has been kept.`)
+		if ($methods.blyde[i]) {
+			if (options.autoNameSpace === 'keep') info(`Blyde property "${i}" has been kept.`)
 			else {
 				let fnName = i
-				if (config.autoNameSpace === 'rename') {
+				if (options.autoNameSpace === 'rename') {
 					fnName = name + i
 					info(`Blyde property "${i}" has been renamed to "${fnName}".`)
 				} else {
-					warn(`Blyde property "${i}" in "${name}" has replaced the original one, set "config.autoNameSpace" to "rename" to keep both.`)
+					warn(`Blyde property "${i}" in "${name}" has replaced the original one, set "options.autoNameSpace" to "rename" to keep both.`)
 				}
-				methods.blyde[fnName] = blyde[i]
+				$methods.blyde[fnName] = blyde[i]
 				Blyde[fnName] = blyde[i]
 			}
 		} else {
-			methods.blyde[i] = blyde[i]
+			$methods.blyde[i] = blyde[i]
 			Blyde[i] = blyde[i]
 		}
 	}
-	plugins[name] = { node, list, blyde }
 	info(`Plugin "${name}" loaded.`)
 }
 
 const takeSnapshot = () => {
 	const methodsShot = {
-		node: Object.assign({}, methods.node),
-		list: Object.assign({}, methods.list),
-		blyde: Object.assign({}, methods.blyde)
+		node: Object.assign({}, $methods.node),
+		list: Object.assign({}, $methods.list),
+		blyde: Object.assign({}, $methods.blyde)
 	}
 	const pluginShot = {}
 	for (let i in plugins) {
@@ -81,10 +78,11 @@ const takeSnapshot = () => {
 	}
 	return {
 		version: `Blyde v${VERSION}`,
-		methods: methodsShot,
 		plugins: pluginShot,
+		$methods: methodsShot,
 		$node,
 		$nodeList,
+		$getSymbol,
 		log,
 		info,
 		warn,
@@ -92,6 +90,6 @@ const takeSnapshot = () => {
 	}
 }
 
-export default (plugin, config = {}) => {
-	register(plugin(takeSnapshot), config)
+export default (plugin, options = {}) => {
+	register(plugin(takeSnapshot), options)
 }
