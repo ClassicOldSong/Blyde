@@ -13,12 +13,7 @@
  |
  */
 module.exports = {
-    "ui": {
-        "port": 3001,
-        "weinre": {
-            "port": 8080
-        }
-    },
+    "ui": false,
     "files": "test/index.html",
     "watchOptions": {},
     "server": {
@@ -49,7 +44,7 @@ module.exports = {
     "xip": false,
     "hostnameSuffix": false,
     "reloadOnRestart": false,
-    "notify": true,
+    "notify": false,
     "scrollProportionally": true,
     "scrollThrottle": 0,
     "scrollRestoreTechnique": "window.name",

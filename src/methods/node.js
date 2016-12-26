@@ -1,16 +1,14 @@
 'use strict'
 
 import { warn, error } from '../debug.js'
-import { $node, $nodeList } from '../shared.js'
+import { $cache, $node, $nodeList } from '../shared.js'
 
 const safeZone = document.createDocumentFragment()
 
 export default {
 	q(selector) {
-		if (!(selector instanceof Node)) {
-			selector = this.querySelector(selector)
-		}
-		if (selector) return selector.$
+		if (!(selector instanceof Node)) selector = this.querySelector(selector)
+		if (selector) return new $node(selector)
 	},
 
 	qa(selector) {
@@ -168,7 +166,8 @@ export default {
 
 	remove() {
 		this.parentNode.removeChild(this)
-		return this.$
+		delete $cache[this.$id]
+		return this
 	},
 
 	safeRemove() {

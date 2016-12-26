@@ -1,10 +1,10 @@
 'use strict'
 
 import logging from 'loglevel'
-const log = (...args) => console.log('[Blyde]', ...args)
-const info = (...args) => logging.info('[Blyde]', ...args)
-const warn = (...args) => logging.warn('[Blyde]', ...args)
-const error = (...args) => logging.error('[Blyde]', ...args)
+const log = console.log.bind(null, '[Blyde]')
+const info = logging.info.bind(null, '[Blyde]')
+const warn = logging.warn.bind(null, '[Blyde]')
+const error = logging.error.bind(null, '[Blyde]')
 
 if (ENV === 'production') {
 	logging.setLevel('error')
