@@ -20,6 +20,7 @@ A blade-sharp javascript library that provides serval simple jQuery like operati
 + `$.at(type, fn)`: Create a delegate for window on `window`
 + `$.drop(type, node, fn)`: Remove a delegate for a node on `window`
 + `$.off(type, fn[, useCapture])`: Remove enentListeners for this element with `window.removeEventListener()` & `window.drop()`
++ `$.$getSymbol()`: Get a `Symbol` with a random string
 + `$node.$el`: The original node of this element
 + `$node.q('selector')`: Wrapper for `node.querySelector()` and return a `$node`
 + `$node.qa('selector')`: Wrapper for `node.querySelectorAll()` and return a `$nodeList`
@@ -35,7 +36,7 @@ A blade-sharp javascript library that provides serval simple jQuery like operati
 + `$node.appendTo(node)`: Append this element to an element
 + `$node.prependTo(node)`: Prepend this element to an element
 + `$node.empty()`: Delete all childnodes from this element
-+ `$node.remove()`: Delete this element from document
++ `$node.remove()`: Delete this element from document and return this element itself *(Not a `$node`!!)*
 + `$node.safeRemove()`: Remove this element from document while all event listeners are still maintained
 + `$node.on(type, fn[, useCapture])`: Wrapper for `Node.addEventListener()`
 + `$node.listen(type, node, fn)`: Create a delegate for a node on this element
@@ -91,7 +92,7 @@ $ npm run build
 ```
 Then you can get the fresh-built `blyde.min.js` at the `dist` folder
 
-**Note:** All debugging messages were removed from the production version
+**Note:** All debugging messages were disabled in the production version
 
 ## TBD
 - [x] Top level Events handler
