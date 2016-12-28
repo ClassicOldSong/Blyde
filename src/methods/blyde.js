@@ -5,11 +5,12 @@ import regFn from '../register.js'
 import nodeMethods from './node.js'
 import eventHandlers from './event.js'
 import { $getSymbol } from '../shared.js'
+import { log, trace, debug, info, warn, error, logger } from '../debug.js'
 
 let velocityUsed = false
 
 const useVelocity = (v) => {
-	if (velocityUsed) return
+	if (velocityUsed) return warn('Velocity.js support has already been enabled!')
 	regFn(() => {
 		velocityUsed = true
 		return {
@@ -62,5 +63,12 @@ export default {
 		return this
 	},
 	$getSymbol,
-	useVelocity
+	useVelocity,
+	log,
+	trace,
+	debug,
+	info,
+	warn,
+	error,
+	logger
 }

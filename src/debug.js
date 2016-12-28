@@ -1,16 +1,17 @@
 'use strict'
 
-import logging from 'loglevel'
+import logger from 'loglevel'
 const log = console.log.bind(null, '[Blyde]')
-const info = logging.info.bind(null, '[Blyde]')
-const warn = logging.warn.bind(null, '[Blyde]')
-const error = logging.error.bind(null, '[Blyde]')
+const trace = logger.trace.bind(null, '[Blyde]')
+const debug = logger.debug.bind(null, '[Blyde]')
+const info = logger.info.bind(null, '[Blyde]')
+const warn = logger.warn.bind(null, '[Blyde]')
+const error = logger.error.bind(null, '[Blyde]')
 
-if (ENV === 'production') {
-	logging.setLevel('error')
-} else {
-	logging.setLevel('trace')
-	info('Debug logging enabled!')
+if (ENV === 'production' && !localStorage.loglevel) {
+	logger.setLevel('error')
 }
 
-export { log, info, warn, error }
+info('Debug logging enabled!')
+
+export { log, trace, debug, info, warn, error, logger }
