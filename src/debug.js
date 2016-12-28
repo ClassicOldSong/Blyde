@@ -8,8 +8,10 @@ const info = logger.info.bind(null, '[Blyde]')
 const warn = logger.warn.bind(null, '[Blyde]')
 const error = logger.error.bind(null, '[Blyde]')
 
-if (ENV === 'production' && !localStorage.loglevel) {
+if (ENV === 'production' && !localStorage.bdFlag) {
 	logger.setLevel('error')
+} else {
+	logger.setLevel('trace')
 }
 
 info('Debug logging enabled!')
