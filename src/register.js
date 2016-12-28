@@ -3,7 +3,7 @@
 
 import Blyde from './blyde.js'
 import { $getSymbol, $methods, $node, $nodeList } from './shared.js'
-import { log, trace, debug, info, warn, error, logger } from '../debug.js'
+import { log, trace, debug, info, warn, error, logger } from './debug.js'
 
 const plugins = {}
 

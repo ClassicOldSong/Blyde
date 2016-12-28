@@ -5,6 +5,7 @@ const resolve = require('rollup-plugin-node-resolve')
 const commonjs = require('rollup-plugin-commonjs')
 const replace = require('rollup-plugin-replace')
 const uglify = require('rollup-plugin-uglify')
+const progress = require('rollup-plugin-progress')
 const git = require('git-rev-sync')
 const { version } = require('../package.json')
 
@@ -15,6 +16,9 @@ module.exports = {
 	format: 'iife',
 	sourceMap: 'inline',
 	plugins: [
+		progress({
+			clearLine: false
+		}),
 		resolve({
 			jsnext: true,
 			main: true,
