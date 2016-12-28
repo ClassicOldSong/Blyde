@@ -3,7 +3,7 @@
 
 A blade-sharp javascript library that provides serval simple jQuery like operations
 
-## Usage
+## Basic Usage
 + `node.$`: Wrap the node with Blyde, return a `$node`
 + `node.$id`: The special id for this node if wrapped by Blyde already (DO NOT MODIFY!!)
 + `Blyde(function)`: Execute the function when document is ready
@@ -92,10 +92,7 @@ $ npm run build
 ```
 Then you can get the fresh-built `blyde.min.js` at the `dist` folder
 
-**Note:** All debugging messages were disabled in the production version
-
-## TBD
-- [x] Top level Events handler
+**Note:** All debugging messages are disabled in the production version
 
 ## License
 [MIT](http://cos.mit-license.org/)

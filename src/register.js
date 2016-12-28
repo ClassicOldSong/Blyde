@@ -1,9 +1,9 @@
 /* global VERSION */
 'use strict'
 
-import { log, info, warn, error } from './debug.js'
 import Blyde from './blyde.js'
 import { $getSymbol, $methods, $node, $nodeList } from './shared.js'
+import { log, trace, debug, info, warn, error, logger } from '../debug.js'
 
 const plugins = {}
 
@@ -84,8 +84,11 @@ const takeSnapshot = () => {
 		$nodeList,
 		$getSymbol,
 		log,
+		trace,
+		debug,
 		info,
 		warn,
+		logger,
 		error
 	}
 }
