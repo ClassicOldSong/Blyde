@@ -1,6 +1,6 @@
 {
   "name": "blyde",
-  "version": "0.1.0-beta.1",
+  "version": "0.1.0-beta.2",
   "description": "A blade-sharp javascript library that provides serval simple jQuery like operations",
   "main": "dist/blyde.min.js",
   "scripts": {
@@ -42,7 +42,6 @@
     "rollup-plugin-commonjs": "^5.0.5",
     "rollup-plugin-eslint": "^3.0.0",
     "rollup-plugin-node-resolve": "^2.0.0",
-    "rollup-plugin-postcss": "^0.2.0",
     "rollup-plugin-progress": "^0.1.0",
     "rollup-plugin-replace": "^1.1.1",
     "rollup-plugin-uglify": "^1.0.1",

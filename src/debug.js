@@ -8,7 +8,7 @@ const info = logger.info.bind(null, '[Blyde]')
 const warn = logger.warn.bind(null, '[Blyde]')
 const error = logger.error.bind(null, '[Blyde]')
 
-if (ENV === 'production' && !localStorage.bdFlag) {
+if (ENV === 'production' && localStorage.bdFlag !== 'true') {
 	logger.setLevel('error')
 } else {
 	logger.setLevel('trace')
