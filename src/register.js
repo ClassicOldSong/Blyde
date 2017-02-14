@@ -3,7 +3,7 @@
 
 import Blyde from './blyde.js'
 import { $getSymbol, $methods, $node, $nodeList } from './shared.js'
-import { trace, debug, info, warn, error, logger } from './debug.js'
+import { trace, debug, info, warn, error, loglevel } from './debug.js'
 
 const plugins = {}
 
@@ -87,7 +87,7 @@ const takeSnapshot = () => {
 		debug,
 		info,
 		warn,
-		logger,
+		loglevel,
 		error
 	}
 }

@@ -5,7 +5,7 @@ import regFn from '../register.js'
 import nodeMethods from './node.js'
 import eventHandlers from './event.js'
 import { $getSymbol } from '../shared.js'
-import { trace, debug, info, warn, error, logger } from '../debug.js'
+import { trace, debug, info, warn, error, loglevel } from '../debug.js'
 
 let velocityUsed = false
 
@@ -69,5 +69,5 @@ export default {
 	info,
 	warn,
 	error,
-	logger
+	loglevel
 }

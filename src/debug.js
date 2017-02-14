@@ -1,20 +1,20 @@
 'use strict'
 
-import logger from 'loglevel'
-const bdlog = logger.getLogger('blyde')
+import loglevel from 'loglevel'
+const logger = loglevel.getLogger('blyde')
 
-const trace = bdlog.trace.bind(null, '[Blyde]')
-const debug = bdlog.debug.bind(null, '[Blyde]')
-const info = bdlog.info.bind(null, '[Blyde]')
-const warn = bdlog.warn.bind(null, '[Blyde]')
-const error = bdlog.error.bind(null, '[Blyde]')
+const trace = logger.trace.bind(null, '[Blyde]')
+const debug = logger.debug.bind(null, '[Blyde]')
+const info = logger.info.bind(null, '[Blyde]')
+const warn = logger.warn.bind(null, '[Blyde]')
+const error = logger.error.bind(null, '[Blyde]')
 
 if (ENV === 'production') {
-	bdlog.setLevel('error')
+	logger.setLevel('error')
 } else {
-	bdlog.setLevel('trace')
+	logger.setLevel('trace')
 }
 
 info('Debug logging enabled!')
 
-export { trace, debug, info, warn, error, logger }
+export { trace, debug, info, warn, error, loglevel }
