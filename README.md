@@ -1,7 +1,7 @@
 # Blyde
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://raw.githubusercontent.com/ClassicOldSong/Blyde/master/LICENSE) [![npm](https://img.shields.io/npm/dt/blyde.svg?style=flat-square)](https://www.npmjs.com/package/blyde) [![Build status](https://img.shields.io/travis/ClassicOldSong/Blyde.svg?style=flat-square)](https://travis-ci.org/ClassicOldSong/Blyde)
 
-A blade-sharp javascript library that provides serval simple jQuery like operations
+A blade-sharp javascript library that provides several simple jQuery like operations
 
 ## Basic Usage
 + `node.$`: Wrap the node with Blyde, return a `$node`
